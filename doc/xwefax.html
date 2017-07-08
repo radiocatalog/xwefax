@@ -1,0 +1,646 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="Bluefish 2.2.10" >
+<title>xwefax User Manual</title>
+<meta name="author" content="Neoklis Kyriazis" >
+<meta name="copyright" content="GPL v2.0 or higher">
+<meta name="keywords" content=
+"GUI Wefax/Radiofax decoder application">
+<meta name="description" content=
+"GUI Wefax/Radiofax decoder application">
+<meta name="ROBOTS" content="INDEX, FOLLOW">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+</head>
+<body>
+<h3>xwefax User Manual</h3>
+<ol>
+<li><a href="#Introduction">Introduction</a>
+<ul>
+<li><a href="#Use">Usage</a></li>
+</ul>
+</li>
+<li><a href="#Features">Features</a>
+<ul>
+<li><a href="#Soundcard">Sound-card set-up</a></li>
+<li><a href="#Discriminator">AF/FM Discriminator</a></li>
+<li><a href="#SignalScope">Input Signal Scope</a></li>
+<li><a href="#Waterfall">"Waterfall" display with CAT</a></li>
+<li><a href="#Indicators">Status Indicators</a></li>
+<li><a href="#Deslanting">Image Slant Correction</a></li>
+<li><a href="#Messages">Status Text Messages</a></li>
+<li><a href="#StationsList">Wefax/Radiofax Stations List</a></li>
+</ul>
+</li>
+<li><a href="#Compilation">Compilation</a></li>
+<li><a href="#Usage">Command line options</a></li>
+<li><a href="#Operation">Operation</a>
+<ul>
+<li><a href="#Interface">xwefax User Interface</a></li>
+<li><a href="#Configure">Configuration and set-up</a></li>
+<li><a href="#StationsData">Using the Stations Treeview
+List</a></li>
+<li><a href="#Receive">Receiving Wefax Signals</a></li>
+</ul>
+</li>
+<li><a href="#Bugs">Bugs and annoyances</a></li>
+<li><a href="#Version">Version history</a></li>
+<li><a href="#Copying">Copying</a></li>
+</ol>
+<p><a name="Introduction" id=
+"Introduction"><b>1.Introduction</b></a><br>
+xwefax is an X/GTK+ Linux application for the decoding, displaying
+and saving of Wefax and Radiofax images, as received by an HF
+receiver, or as from version 2.1 with a Perseus SDR receiver.</p>
+<p><a name="Use" id="Use"><b>Usage:</b></a> xwefax [-hv]</p>
+<p>-h: Print usage information and exit.</p>
+<p>-v: Print version number and exit.</p>
+<p><a name="Features" id="Features"><b>2. Features</b></a><br></p>
+<p><a name="Soundcard" id="Soundcard"><b>Sound-card
+set-up</b></a><br>
+xwefax automatically prepares the sound card and sets the mixer
+Capture level to the value specified in the ~/xwefax/xwefaxrc
+configuration file. For proper operation, the level of the input
+signal must be adjusted from the receiver, if volume control is
+available, or by changing the value of the Capture level in the
+~/xwefax/xwefaxrc configuration file, if audio is taken from a
+fixed-volume source, such as the "data" i/o port. Please see the
+<a href="#Operation">Operation</a> section for details on how to
+set-up the sound card.</p>
+<p><a name="Discriminator" id="Discriminator"><b>Software AF/FM
+Frequency Discriminators</b></a><br>
+xwefax carries out demodulation of the Audio Frequency-Modulated
+Wefax signal with fairly simple DSP FM discriminator algorithms.
+There are two such FM discriminators, a Zero Crossing detector and
+a Bi-level Tone detector, one of which can be selected from the "FM
+Detector" popup menu item. The default is the Zero Crossing
+detector which is usually more suitable for general use, as the
+Bi-level detector posterizes the WEFAX image, and is mostly useful
+for receiving stations that transmit a white|black image only.</p>
+<p>The Zero Crossing detector works by keeping a sliding window
+average of the incoming signal samples from the audio DSP, and then
+detecting a zero-crossing of the WEFAX carrier signal by comparing
+the signs of two consecutive averages. If they are different, then
+the carrier signal has crossed the zero level and therefore we have
+the beginning of a half cycle of the incoming (sinusoidal) carrier
+signal. By counting the number of DSP samples to the next zero
+crossing, the half-period of the carrier signal can be measured and
+thus its frequency can be estimated.</p>
+<p>The Bi-level detector works by implementing two Goertzel tone
+detectors, one on the White frequency (2300 Hz) and one on the
+Black frequency (1500 Hz). By comparing the signal levels as
+measured by the Goertzel detectors, the frequency of the WEFAX
+carrier signal can be estimated. These level comparisons are
+limited to only 5 thresholds, therefore the Bi-level detector
+produces a posterized WEFAX image.</p>
+<p>The calculated frequency of the input AF signal is scaled and
+threshold-ed so the a value of 0 to 255, for the brightness level
+of the relevant Wefax image pixel can be calculated and used to
+create the Wefax image. The standard frequency range for
+transmitting Wefax and Radiofax images is 1500 Hz for black and
+2300 Hz for white. Here is the complete specification for the Wefax
+image transmission process, as generally accepted by most Wefax
+stations:</p>
+<table align="center" border="1" cellpadding="5" cellspacing="0"
+summary="wefax">
+<tbody>
+<tr>
+<th>Signal</th>
+<th>Duration</th>
+<th>IOC576</th>
+<th>IOC288</th>
+<th>Remarks</th>
+</tr>
+<tr>
+<td>Start tone</td>
+<td>5s</td>
+<td>300&nbsp;Hz</td>
+<td>675&nbsp;Hz</td>
+<td>200&nbsp;Hz for color fax modes.</td>
+</tr>
+<tr>
+<td>Phasing signal</td>
+<td>30s</td>
+<td></td>
+<td></td>
+<td>White line interrupted by a black pulse.</td>
+</tr>
+<tr>
+<td>Image</td>
+<td>Variable</td>
+<td>1200 lines</td>
+<td>600 lines</td>
+<td>At 120 lpm.</td>
+</tr>
+<tr>
+<td>Stop tone</td>
+<td>5s</td>
+<td>450&nbsp;Hz</td>
+<td>450&nbsp;Hz</td>
+<td></td>
+</tr>
+<tr>
+<td>Black</td>
+<td>10s</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<a name="SignalScope" id="SignalScope"><b>Signal Scope</b></a><br>
+xwefax has a simple oscilloscope type display of the incoming audio
+signal as produced by the FM discriminator. This can be used to
+monitor the Wefax/Radiofax signal as received by the radio
+receiver. It can also be used to set up the sound card Capture
+level by activating the "Capture Setup" menu item, in which case
+the Scope will indicate the magnitude of the incoming audio signal.
+<p><a name="Waterfall" id="Waterfall"><b>"Waterfall" display with
+CAT</b></a><br>
+xwefax has a "Waterfall" (audio Spectrum) display derived from an
+DFT of the receiver's audio output. The Waterfall display has two
+vertical white lines at each side of window, which indicate the
+position of the White and Black frequencies. The position of these
+lines depends on the specified White and Black frequencies
+(normally 2300 Hz and 1500 Hz). Wefax/Radiofax signals are mostly
+concentrated around the White frequency, so the Spectrum display
+usually shows a band of signals either side of this frequency. For
+proper tuning of a Radiofax signal, this spectrum band should be
+centered on the White frequency line at the right of the Spectrum
+display. Most Wefax/Radiofax stations on the short waves specify
+the carrier frequency, while the modulation is Upper Side Band
+(USB) and it is centered in the middle between the white and black
+frequencies, e.g. (2300 + 1500) / 2 = 1900 Hz. So the receiver must
+be tuned to 1.9 KHz lower than the specified carrier frequency. For
+example DDK3 transmits on 7880 KHz so the receiver must be tuned to
+7878.1 KHz USB. Some stations, like SVJ4 in Athens, specify the
+receiver dial frequency, e.g. 8105.0 KHz, which gives the right AF
+output frequencies already.</p>
+<p><a name="Indicators" id="Indicators"><b>Status
+Indicators:</b></a><br>
+There are three Status Indicator icons in the xwefax Control
+Frame:<br>
+<b>o</b> The "Start Tone" Indicator shows a green "LED" icon when
+xwefax is listening for a Wefax/Radiofax Start tone. If this stage
+in the decoding of Wefax images is skipped by the user, this
+indicator shows a red "cancel" icon and if a start tone is
+detected, it shows a green "tick" icon.<br>
+<b>o</b> The "Sync Pulse" Indicator shows a green "LED" icon when
+xwefax is synchronizing itself with the Phasing Pulses transmitted
+by the station. If this stage in the decoding of Wefax images is
+skipped by the user, this indicator shows a red "cancel" icon and
+when synchronizing is complete, it shows a green "tick" icon.<br>
+<b>o</b> The "Decoding" Indicator shows a green "LED" icon when
+xwefax is decoding the Wefax/Radiofax image from the incoming
+signal from the receiver. If this stage in the decoding of Wefax
+images is skipped by the user, this indicator shows a red "cancel"
+icon and when decoding is completed (a Stop Tone has been
+detected), it shows a green "tick" icon.<br>
+<b>o</b> The "Save Img" Check Box can be used to disable or enable
+Saving of the decoded WEFAX image. The "Save Img" Indicator shows
+the status of the WEFAX image Save functionality. If saving is
+disabled then the "x" icon is shown. Otherwise a green "LED"
+indicates that saving is enabled and a green "tick" icon indicates
+that image saving to file has been successful. A red "LED"
+indicates a problem with image saving.<br>
+<b>o</b> At the right of the Wefax Control frame, a Level Bar
+indicates the level of either the Start or Stop signal, depending
+on the current operation. The Level Bar indicates Green color if
+the signal is above the "Detected" threshold, Orange color if the
+signal is between the "Detected" and "Activate" threshold and Red
+if the Start/Stop signal is not detected. Xwefax expects the level
+of the Start/Stop signal to first rise into the Green sector and
+then fall below the Orange sector (Hysteresis), before it is
+considered as successfully detected.</p>
+<p><a name="Deslanting" id="Deslanting"><b>Image Slant
+Correction:</b></a><br>
+Unfortunately Wefax/Radiofax stations do not follow a consistent or
+standard format of image transmission and this makes it difficult
+to decode images in a uniform way. Some stations transmit a regular
+Phasing (Sync) pulse at the start of each image line. This pulse is
+usually about 55-60 pixels long and it is black color on a mostly
+white line. xwefax can use this pulse to synchronize decoding of
+images so that there is little or no slanting of the image content,
+due to slight timing differences between the transmitting and
+receiving stations. Some stations just do not transmit in-image
+phasing pulses and others transmit shorter or intermittent pulses,
+making it impossible to actively synchronize sender and receiver.
+In this case xwefax can de-slant images pre-emptively by applying a
+correction factor, calculated from measuring the slant of a saved
+image. This de-slanting factor is in (pixels/1000 lines of image)
+and it can be specified either permanently in the Stations Treeview
+Window (and saved to the Stations file) or set before decoding in
+the Fix Slant spin button. Positive figures compensate for slanting
+to the left and negative figures for slanting to the right.</p>
+<p>The slant correction factor is calculated as follows: First
+receive and save a wefax image, one that contains a vertical line
+or the trace of the phasing pulse, if transmitted, and then open
+the Wefax image in and image editor like the Gimp. Measure the
+horizontal position in pixels of the vertical line at the top and
+bottom of the image and find the difference (in pixels). Then
+measure the vertical position of the line at the top and bottom of
+the image (this is the height of the line in pixels). Divide the
+slant of the vertical line with the height and multiply by 1000, to
+calculate the slant correction factor in pixels/1000 lines. If the
+image is slanted to the right, the correction factor is negative,
+otherwise positive. This value can then be entered in the stations
+file, either using the stations Treeview window or if necessary
+using a text editor.</p>
+<p><a name="Messages" id="Messages"><b>Status Text
+Messages:</b></a><br>
+The "Xwefax Messages" text view port prints various messages from
+xwefax regarding the status of various operations, error conditions
+and other information relevant to xwefax's operation. Pending
+operations are shown in black, successful completions in green,
+canceled operations in orange and error messages in red.</p>
+<p><a name="StationsList" id="StationsList"><b>Wefax/Radiofax
+Stations List</b></a><br>
+The Stations Treeview Window presents a list of Wefax/Radiofax
+stations and some of the relevant parameters for decoding images.
+For each station row, there are the following columns:<br>
+o The Name of the station.<br>
+o The Frequency in Hz it transmits on, including a 1900 Hz
+compensation to take into account the use of USB mode, and
+frequency shift from 1500 Hz to 2300 Hz (center frequency 1900
+Hz).<br>
+o The RPM (transmission speed) value in lines/min.<br>
+o Image resolution in pixels/line.<br>
+o The IOC (Index Of Co-operation) value.<br>
+o The Image Slanting correction factor in pixels/1000 lines.<br>
+If CAT is enabled, which is available for the Elecraft K2/K3 or
+Yaesu FT847/857, it is possible to tune in the receiver to the
+station frequency and for the K3 to set the mode (USB) and
+bandwidth (1400 Hz, centered on an IF shift of 1900 Hz). In any
+case, the Wefax/Radiofax decoding parameters are also entered into
+the relevant items in the pop-up Menu. To navigate the Treeview
+list, the Up and Down buttons can be used, as well as the Up/Down
+arrow keys in the keyboard. With CAT enabled, the receiver will be
+tuned to the station frequency as well.</p>
+<p><a name="Compilation" id="Compilation"><b>3.
+Compilation</b></a><br>
+Please note that I use <a href="http://www.voidlinux.eu">Void
+Linux</a> which is a "bleeding edge" type distribution, so there
+may be compilation and/or run time difficulties if you are using a
+relatively old distro. This is mostly true of the basic
+dependencies like GTK+-2 and Glade-2, and there can also be sound
+card incompatibility problems at run time.</p>
+<p>Because this version of Xwefax has support for the Perseus SDR
+receiver, it is necessary to install the <a href=
+"https://github.com/Microtelecom/libperseus-sdr">libperseus-sdr</a>
+library before compiling. This may already be available in more
+comprehensive Linux distributions. Once libperseus-sdr is
+installed, compile Xwefax as below.</p>
+<p>To compile the package, it may be preferable to first run the
+included "autogen.sh" script in the package's top directory, to
+produce a fresh build environment. Then the "configure" script can
+be run with optional parameters to override the default settings
+and compiler flags, e.g: ./configure --prefix=/usr CFLAGS="-g -O2"
+will override the default /usr/local installation prefix and the
+"-Wall -O2" compiler flags.</p>
+<p>Running "make" in the package's top directory should produce the
+executable binary in src/. Running "make install" will install the
+binary into /usr/local/bin by default or under the specified
+prefix. It will also install the xwefax working directory and
+default configuration file into the user's home directory. This
+will have to be edited by the user as required. There is also this
+hypertext documentation file which you can copy to a location of
+your choice.</p>
+<p>xwefax requires a directory named xwefax in the user's Home
+directory, where the ~/xwefax/xwefaxrc run time configuration file
+is placed after suitable editing. A list of several Radiofax
+station frequencies and other relevant parameters is also included,
+in a file named stations. This file can be edited in a text editor
+but the formatting must be adhered to, especially the position of
+data in the columns. This file is more safely edited in xwefax
+Stations Treeview window. Finally a folder named "images" is
+needed, for xwefax to save images in.</p>
+<p><a name="Usage" id="Usage"><b>4. Command line
+options</b></a><br>
+xwefax can be invoked with the following options:</p>
+<p>-h: Print this usage information and exit.</p>
+<p>-v: Print version number and exit.</p>
+<p><a name="Operation" id="Operation"><b>5.
+Operation</b></a><br></p>
+<p><a name="Interface" id="Interface"><b>xwefax User
+Interface</b></a><br>
+xwefax is an X/GTK+ application for Linux. The main application
+window has the following widgets:</p>
+<p>1. <b>The Wefax/Radiofax Image Viewport:</b> This is the main
+part of the xwefax application window and it is used to display the
+Wefax/Radiofax image as it is decoded progressively. Right clicking
+on the window opens the main Pop up Menu. When image decoding is
+over, the displayed image is saved in a PGM file format in
+~/xwefax/images/ folder The Wefax image can be processed, while it
+is being received, either by contrast stretching or bi-level
+(black-white) thresholding. These functions are selected from the
+"Enhance Image" item in the Pop up Menu.</p>
+<p>2. <b>The Signal Input Display:</b> This is the small window at
+the bottom left of the xwefax application window, with the dark
+green background. It can display either the output of the FM
+discriminator (e.g. the incoming Wefax signal) or the amplitude of
+the AF signal supplied by the radio receiver. In the latter case it
+is used for setting up the Capture level of the Sound Card, for
+proper operation.</p>
+<p>3. <b>The Spectrum/Waterfall Display:</b> This is to the right
+of the Signal display and it has a black background. It is used to
+display the Spectrum of the incoming Wefax signal, as produced by
+an DFT function, in the form of a "waterfall". This display can be
+used to tune the receiver via CAT, but only for a Yaesu FT847/857
+or Elecraft K2/K3 rig. The Wefax signal's spectrum is normally
+concentrated around the White frequency of 2300 Hz and it produces
+a fairly wide strip down the Waterfall. By clicking on this strip,
+it is possible to tune in the Receiver, fairly accurately.</p>
+<p>4. <b>The Xwefax Control Frame:</b> This frame contains a couple
+of buttons, one for starting xwefax and one for skipping between
+operating modes of xwefax. The "STANDBY" button puts xwefax in the
+Receive mode, whereby the button label indicates "RECEIVE" in green
+and the top "Start Tone" red indicator changes to green. In this
+condition xwefax waits for a Wefax Start tone, to initiate the
+image decoding process. The "Skip" button causes xwefax to skip
+forward to the next mode, e.g. from waiting for a Start tone to
+Synchronizing with the Phasing pulses, or from this mode to
+Decoding the Wefax image. This makes it possible to bypass missed
+stages in the Wefax image transmission sequence. The appearance of
+the indicators shows Non-Function (Red), Operating (Green), Skipped
+(Red X) and Finished (Green tick).</p>
+<p>As of version 1.7, there is also a vertical Level Gauge at the
+right side of the frame. This gauge indicates signal level when the
+"Capture Setup" item is activated in the pop-up menu, otherwise it
+indicates the output of the Start Tone detector when xwefax is
+waiting for one, or the output of the Stop Tone detector while an
+image is being decoded. I added this gauge as there were some
+problems detecting start/stop tones and I wanted an indicator to
+help me investigate.</p>
+<p>5. <b>The Messages Text Viewport:</b> Various messages are
+printed here by xwefax to indicate current status, operations like
+saving images, setting up CAT or the Sound card, error conditions
+etc.</p>
+<p>6. <b>The pop-up Menu:</b> This opens on a right-click on the
+Wefax Image window. It has the following items:<br>
+<b>o Stations List:</b> Opens the Stations List Treeview window
+from which a Wefax/Radiofax station can be selected by clicking on
+a Treeview row. It is also possible to move between stations by
+clicking the Up or Down buttons or the Up/Down arrow keys on the
+keyboard. The Delete button removes a row, whereas the New button
+creates a new row, which can be filled either manually or by middle
+clicking on the row. In this case the row will be filled with the
+currently used values of the xwefax parameters. If CAT is enabled,
+the receiver's frequency will also be entered.<br>
+<b>o FM Decoder:</b> Select one of the two available WEFAX carrier
+signal decoders, the Zero Crossing detector or the Bi-level Tone
+Detector.<br>
+<b>o RPM:</b> Select the RPM (Lines/min) value used by the station.
+Default is 120 RPM (lines/min).<br>
+<b>o Resolution:</b> Select the image resolution in pixels/line.
+The default is 1200 pix/line.<br>
+<b>o IOC Value:</b> Select the IOC (Index of Co-operation) value of
+the station. The default is 576.<br>
+<b>o Phasing Lines:</b> Select the number Phasing lines to examine
+at the start of image transmission. There is no universally
+followed standard unfortunately, with some stations transmitting as
+few as 10 phasing lines and others up to 60. The default of 20
+lines will not work for stations transmitting less than this. As of
+version 1.7, the number of phasing lines to listen for can be
+specified and saved in the Stations List Treeview window. This will
+override any selection made from the popup menu, when a station is
+selected from the list.<br>
+<b>o In Image Phasing:</b> Enable synchronization with in-image
+phasing pulses transmitted by some stations.<br>
+<b>o Image Enhancement:</b> Select "Normalize Image" to stretch the
+contrast of the image as it is being received or "Bi-level Image" to
+threshold the image to only Black or White values.<br>
+<b>o Image File Format:</b> Select the Image File format: JPEG, PGM
+or Both, if needed. xwefax has a simple built-in JPEG encoder for
+gray scale images that can reduce the image file size considerably.
+The JPEG file format is the default.<br>
+<b>o Capture Setup:</b> Enable the display of input signal level
+for setting up Capture level.<br>
+<b>o Quit:</b> Quits xwefax.</p>
+<p><a name="Configure" id="Configure"><b>Configuration and
+set-up</b></a><br>
+After compilation and installation, the ~/xwefax/xwefaxrc run time
+configuration file MUST be edited for proper operation! To do this,
+load ~/xwefax/xwefaxrc into your favorite editor and make sure that
+you review ALL the configuration fields in the file and that you
+properly edit all the ones that must be edited. There are more
+detailed instructions in the file itself so please follow them for
+a proper set-up.</p>
+<p>Next, the sound card must be set up. For this to be done, the
+receiver's audio output should be connected to the computer's sound
+card (usually to the 'line' input) and the receiver tuned to some
+stable carrier signal with no AM modulation. Modern HF transceivers
+have general coverage receivers with DSP audio filters down to 25
+or 50 Hz bandwidth and this makes it possible to use a local
+broadcast station as a signal source.</p>
+<p>With the narrowest bandwidth selected, start xwefax and fine
+tune the receiver, in USB mode, for the specified White tone
+frequency. This can be done by placing the Spectrum trace under the
+right guide line. Next, open the pop-up Menu and activate the
+"Capture Setup" menu item. For the correct level of audio input,
+the signal level line in the Scope display should be no higher than
+about 80% - 90% the height of the Scope display. If the audio level
+is to high, then the signal trace will be broken and irregular. If
+this happens, then reduce the receiver's volume level or if the
+audio output is taken from a fixed-level outlet (like the 'data'
+port), set the correct input level by editing the Capture level
+value in the ~/xwefax/xwefaxrc file. It is also possible to use a
+mixer application to adjust the Capture level for the correct
+signal level, and then use the setting in xwefaxrc.</p>
+<p><a name="StationsData" id="StationsData"><b>Using the Stations
+Treeview List</b></a><br>
+The Stations Treeview Window opens when the "Station List" menu
+item is activated. The Stations Treeview can be used to select the
+desired Wefax/Radiofax station and to enter the decoding parameters
+into the relevant menu items. As well as selecting stations and
+entering decoding parameters, the Treeview can be used to edit all
+data in the columns of a selected row and save all Treeview data to
+the "stations" file in the ~/xwefax directory. The following are
+the columns available in the list:<br>
+STATION NAME: The name of the WEFAX station in the row.<br>
+FREQUENCY: The frequency of the station in Hz. This is normally
+1900 Hz below the specified carrier frequency. This needs to be
+fine-tuned by tuning the Receiver, so that the trace of the White
+frequency (2300 Hz) in the Waterfall display is under the vertical
+white line at the right of the display. When using the Perseus SDR
+or one of the supported receivers with CAT, clicking near the trace
+of the White frequency will automatically tune the receiver to the
+right frequency. This setting can be saved to the Stations List by
+middle click on the selected Station row.<br>
+S/B: The side band used by the WEFAX station. This should normally
+be Upper Side Band but on a couple of occasions I heard one station
+using LSB, so I added this column as of xwefax v1.7<br>
+RPM: The RPM or Line Transmission Rate of the station. This is
+normally 120 RPM or Lines/min but some stations (Kyodo News) use 60
+RPM also.<br>
+PIX/L: The resolution of images in pixels/line. This is normally
+1200 pix/line.<br>
+IOC: The Index of Cooperation. This is normally 576.<br>
+PHL: The number of phasing lines to listen for, after the Start
+Tone. The default is 20, but some stations (the Hellenic Met
+service) use only 10 but since 2-3 line may be missed at the start,
+due to a delay in the Start Tone detector, it is necessary to
+specify 10 for this station. For most others, a value of 40 can be
+specified if desired, since usually about 60 phasing line are
+sent.<br>
+SKEW: The image slant correction factor in pixels/1000. This is
+needed to compensate for the difference in timing between the
+sending and receiving stations. The right value must be found as
+described previously.</p>
+<p><a name="Receive" id="Receive"><b>Receiving Wefax/Radiofax
+signals</b></a><br>
+Wefax/Radiofax signals are transmitted on the short waves by
+stations operating in the USB mode and with a Frequency Modulated
+output, in a Slow Scan TV format. White color is represented by a
+2300 Hz signal and Black color with a 1500 Hz signal. The
+transmission begins with a few seconds of a Start Tone and then a
+number of Phasing (Synchronizing) lines are sent. These are used to
+synchronize the start of image lines at the receiving end with
+those of the transmitting end. The Phasing lines are black with a
+short white part at the beginning, and they are then followed by
+the image lines, with the height of the image (the number of image
+lines) being variable. Some stations transmit phasing pulses at the
+start of image lines, but these are short black lengths in mostly
+white lines. Unfortunately not all stations follow the accepted
+standards for Wefax transmissions, making it rather difficult to
+apply regular algorithms for sync detection.</p>
+<p>To receive a Wefax/Radiofax station, first set up the receiver
+for USB mode and if possible, adjust the receiver bandwidth to
+cover from about 1200 Hz to 2600 Hz (with a center frequency of
+1900 Hz). Some receivers (my Elecraft K3) have IF Shift and
+Bandwidth control which can make this easier. Then tune a station
+manually or, if using an Elecraft K2/K3 or Yaesu FT847/857, for
+which xwefax has CAT control, by using the Stations Treeview
+window. Again, if using a K2/K3 or FT847/857, the Spectrum display
+can be used to accurately tune in, by clicking on the White signal
+trace in this display. The CAT function will tune in the receiver
+fairly accurately to the right frequency. If xwefax is started by
+clicking on the STANDBY button, it will wait until a Start Tone is
+received and when the Phasing Pulse signals begin, it will
+synchronize itself and enter the Image Decoding mode. The Wefax
+image is decoded line by line and displayed in the Image window.
+When a Stop Tone is received, xwefax saves the decoded image and
+again it waits for the next Start Tone. If left to its own devices,
+it will continue in the way, automatically decoding and saving
+images.</p>
+<p><a name="Bugs" id="Bugs"><b>6. Bugs and deficiencies</b></a><br>
+I have fixed whatever bugs I came across testing xwefax, but there
+may be some hiding, waiting for the right conditions to appear.<br>
+Because at the moment the Blocking read method is used to read DSP
+samples from the sound card, the GUI is rather unresponsive while
+xwefax is in the Receive mode. Also, using the CAT function to tune
+the Receiver can cause loss of data from the sound card and this
+will slant the image to a large extend. Hopefully this deficiency
+may be rectified if a non-blocking method can be implemented in
+xwefax. This is mainly a matter of finding documentation,
+apparently mostly lacking for the ALSA sound system.</p>
+<p><a name="Version" id="Version"><b>7. Version
+history</b></a><br></p>
+<p><b>Version 0.1a</b> First alpha version of the basic xwefax
+application.</p>
+<p><b>Version 0.2a</b> Added the Pop up menu widget and its
+functionality.</p>
+<p><b>Version 0.3a</b> Added the Stations Treeview window for
+selecting Wefax stations and tuning the Receiver via CAT.</p>
+<p><b>Version 0.4b</b> First beta release version with
+documentation and much testing by clang analyzer and Coverity
+Scan.</p>
+<p><b>Version 0.5b</b> Some code clean-up and tidying. Also edited
+the default xwefaxrc file to have the CAT entry as NONE by
+default.</p>
+<p><b>Version 0.6b</b> Fixed some bugs reported by Al Bolduc,
+KA1AS, regarding CAT error messages and difficulties in canceling
+CAT. Also in the ~/xwefax/stations file, I zeroed the slant
+correction factors, since these are dependent on individual
+stations and must be calculated by the user after receiving and
+saving images, as explained in the documentation.</p>
+<p><b>Version 0.7b</b> I modified the code related to reading
+samples from the sound card DSP and decoding images so that it
+returns control the the GTK+ main loop more often. This helps to
+make the user interface more responsive as the application spends a
+lot less time blocked by ALSA's samples reading functions.</p>
+<p><b>Version 0.8b</b> I modified the AF frequency discriminator
+code to hopefully improve rendering of Wefax images, especially
+thin vertical lines.</p>
+<p><b>Version 0.9b</b> I fixed a bug in the code that handles the
+Quit menu option, to actually quit xwefax fully.</p>
+<p><b>Version 1.0</b> I changed the algorithm that carries out
+frequency discrimination on the incoming AF/FM Wefax carrier. The
+new algorithm seems to be doing a better job and it is also able to
+take advantage of slower pixel transmission rates (as when 60 rpm
+is used, for example).<br>
+Also fixed a couple of memory leaks reported by valgrind and
+modified the code that handles manual syncing of the image to avoid
+an occasional line misalignment problem.</p>
+<p><b>Version 1.1</b> I changed the Stations File saving code since
+the original would leave the file empty, if a save was activated
+while xwefax was in the RECEIVE mode.</p>
+<p><b>Version 1.2</b> I changed the Stations File saving code so
+that data in the Treeview column are formatted properly before
+writing to file. Also fixed a bug that caused xwefax to crash if
+the Treeview window was closed after a save, while xwefax was in
+RECEIVE mode, and then put to STANDBY mode.</p>
+<p><b>Version 1.3</b> I added a simple JPEG encoder code for gray
+scale images, derived from Moodstocks SAS "jpec" image compressor
+code. xwefax now saves images in jpeg format but it can also save
+in pgm format or both, selected from the pop-up menu.</p>
+<p><b>Version 1.4</b> I increased the Period Size of the Sound card
+DSP to 4096 and the Number of Periods to 4 to reduce occurrences of
+"Broken pipe" when reading of DSP samples is hampered by e.g. user
+interaction with the application's GUI.</p>
+<p><b>Version 1.5</b> I fixed a bug in the code that produces the
+"Scope" display for the setting up of the input signal level. I
+also made changes to the Image Enhancement code to improve the
+results from the "Normalize" and "Bi-level" algorithms.</p>
+<p><b>Version 1.6</b> I replaced the original Frequency
+Discriminator with a more effective Zero Crossing detector which is
+more resilient to noise and has a better response to the frequency
+modulation of the WEFAX signal. I have also added an alternative
+Frequency Discriminator, the Bi-level Detector which estimates the
+signal frequency by employing a Goertzel detector centered at the
+Black and White frequencies (1500 and 2300 Hz). The output of this
+Discriminator is produced by comparing the outputs from the
+Goertzel detectors and estimating the signal frequency. This
+detector produces a posterized output and is more suitable for
+stations that transmit mostly black|white images.</p>
+<p><b>Version 1.7</b> I added a vertical Level Gauge at the right
+of the Control Frame to indicate the WEFAX signal level or the
+output of the Start or Stop tone detectors. Also added two new
+columns to the Stations List, one to specify station side band (LSB
+or USB) and one to specify the number of Phasing Lines to listen
+for.</p>
+<p><b>Version 1.8</b> I modified slightly the code for the Zero
+Crossing FM detector to improve contrast and sharpness, but this
+has made it a little more susceptible to noise. I modified the
+functions that handle the Popup menu items relating to the WEFAX
+decoders parameters, as well those that handle the same parameters
+(RPM, Pix/Line, IOC etc) from the Stations List, so that new
+stations can be selected while xwefax is in RECEIVE mode.
+Previously doing so did not correctly set up decoder parameters,
+resulting in the Start and Stop tones not being detected when
+changing between stations with different RPM values (like from
+Kyodo News to others).</p>
+<p><b>Version 1.9</b> I modified the zero crossing detector to
+operate in a more continuous way, to improve performance in noisy
+conditions. I have added a "Save Img" checkbox and Indicator in the
+Xwefax Control frame to facilitate enabling/disabling of WEFAX
+image save-to-file. I also added a vertical Level bar to indicate
+the detected level of the WEFAX Start or Stop signal.</p>
+<p><b>Version 2.0</b> I made some changes to the DFT code used to
+produce the Waterfall display, e.g. to decimate the sampling rate
+by simple "box" averaging instead of skipping samples.</p>
+<p><b>Version 2.1</b> I have added support for the Perseus SDR
+receiver so that WEFAX stations can be received with this device.
+There is no sound output though, as WEFAX stations are on fixed
+frequencies and tuning is done visually on the waterfall.</p>
+<p><a name="Copying" id="Copying"><b>8. Copying</b></a> This
+software package is released under the GNU Public License. Please
+see the COPYING file for more details.</p>
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.</p>
+<p><!-- Created: Tue Jun 25 10:36:53 EEST 2002 -->
+<!-- hhmts start -->
+Last modified: Sat Mar 8 07:38:59 EET 2003 <!-- hhmts end --></p>
+</body>
+</html>

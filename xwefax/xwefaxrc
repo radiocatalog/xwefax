@@ -1,0 +1,150 @@
+############## xwefax RUNTIME CONFIGURATION FILE: xwefaxrc ##########
+#                                                                   #
+# PLEASE NOTE! In order to keep the parser for this file simple,    #
+# the runtime configuration entries below must all be present and   #
+# in the order presented, since they are all read-in in a fixed     #
+# sequence. Blank lines or those starting with a # or white space   #
+# are ignored.                                                      #
+#                                                                   #
+# There are four sections, Sound card, xwefax Runtime, Operator and #
+# QTH and Macros fields. Please check ALL and EDIT as needed!!      #
+#                                                                   #
+#####################################################################
+#
+####### SOUND-CARD CONFIGURATION #######
+#
+# PLEASE NOTE: It was very hard for me to migrate this
+# program from the OSS API to the ALSA API, mainly because
+# of the very sparse documentation and lack of a simple
+# tutorial on Mixer programming. There may difficulties
+# making this program run on platforms other than mine,
+# if the sound card features are significantly different.
+#
+# Sound card hardware name: Default is hw:0 (first card).
+# Other names can be hw:1 for the second sound card etc.
+# There is a large number of possibilities for this entry
+# which I can only just understand, but if this simple name
+# string does not work, I am afraid you will need to have a
+# look at the on-line ALSA documentation.
+hw:0
+#
+# PCM Device Name
+hw:0,0
+#
+# The sampling rate of the sound card's DSP. This should as 
+# far as possible be the native speed of the DSP to avoid
+# resampling, as it seems resampling distorts the signal.
+# The default is 48000 but for older cards it may be 44100
+48000
+#
+# The "channel" to be used for sound capture. ALSA uses the
+# notion of a channel for the description of what input is
+# being used for capture. With todays sound cards that have
+# surround sound etc there can be many inputs to choose from
+# to connect the audio o/p from a receiver. These are the
+# channel descriptions I know of (alsa-lib 1.0.20) that can be
+# used with xdemorse.
+# FRONT_LEFT
+# FRONT_RIGHT
+# REAR_LEFT
+# REAR_RIGHT
+# SIDE_LEFT
+# SIDE_RIGHT
+# MONO
+# The default is FRONT_LEFT (that works for me)
+FRONT_LEFT
+#
+# Sound capture source: Default is Capture.
+# but with some cards it may be Line.
+Capture
+#
+# Sound capture volume control: Default is Capture.
+# If volume setting is not possible or desired, replace with --
+Capture
+#
+# Recording/Capture level: Useful range ~10-100%.
+# The correct value must be found by testing, see xwefax.html.
+100
+#
+####### End of SOUND-CARD CONFIGURATION #######
+#
+####### xwefax RUNTIME CONFIGURATION #######
+#
+# Use the Perseus SDR receiver for WEFAX reception. Specify PERSEUS
+# to use the SDR Rx or RADIO to use one of the Radios below.
+PERSEUS
+#RADIO
+#
+# Correction for the Perseus' X/O frequency error (ppm). This is
+# usually around 5ppm and must be found using another SDR application.
+5.0
+#
+# Correction for the error in the sampling rate of the Perseus SDR.
+# This value applies to my own unit but may be good enough for others.
+82
+#
+# Enable CAT for Yaesu FT847 or FT857 or K3 transceiver.
+# Setting is FT847 or FT857 or K3 or NONE, if you have
+# some other transceiver or don't want CAT.
+K3
+#
+# Serial port device for CAT: Please specify the serial port device
+# you intend to use for CAT control of your tranceiver. PLEASE NOTE:
+# CAT is available only for the YAESU FT-847, FT857 and Elecraft K3,
+# which I own. If you are using some other tranceiver, there is no
+# need to edit this entry BUT DO NOT ACTIVATE CAT BELOW.
+/dev/k3
+#
+# Default Main Window Height in pixels.
+750
+#
+# The frequency of the "white" signal. This is the frequency
+# of the WEFAX AF signal that represents white in the image.
+# Default value is 2300 Hz, to co-incide with amateur SSTV.
+2300
+#
+# The frequency of the "black" signal. This is the frequency
+# of the WEFAX AF signal that represents black in the image.
+# Default value is 1500 Hz, to co-incide with amateur SSTV.
+1500
+#
+# Maximum number of image lines to decode. xwefax will
+# stop decoding a WEFAX image after this limit is exceeded.
+# Default is 2500 lines.
+2500
+#
+# Default Transmission Rate (RPM). This is specified
+# in lines/min. Acceptable values are 60, 90, 100, 120,
+# 180 and 240. Default is 120 lines/min.
+# This is overwritten by data from the Stations list
+# when a station is selected by the user.
+120
+#
+# Default Resolution of the WEFAX image. This is usually
+# specified in "lines" for HF WEFAX but in reality it is
+# pixels/image line. Acceptable values are 600 and 1200.
+# Default is 1200 pixels/line
+# This is overwritten by data from the Stations list
+# when a station is selected by the user.
+1200
+#
+# Default IOC value. This is either 288 or 576 (default).
+# This is overwritten by data from the Stations list
+# when a station is selected by the user.
+576
+#
+# Number of lines with phasing pulses, following the Start
+# Tone. This is normally 60 but it can vary. Its better to
+# specify a small number, else phasing will be spoiled.
+# Values  should be 10, 20, 40 or 60. Default is 20.
+# This is overwritten by data from the Stations list
+# when a station is selected by the user.
+20
+#
+# Image enhancement algorithm. At the moment these settings
+# only are available:
+# 0 = NONE - No image enhancement
+# 1 = ENHANCE CONTRAST - Image contrast is normalized
+# 2 = BILEVEL IMAGE - Brightness is thresholded to 0 or 255
+0
+#
