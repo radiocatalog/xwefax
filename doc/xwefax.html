@@ -3,7 +3,7 @@
 <head>
 <meta name="generator" content="Bluefish 2.2.10" >
 <title>xwefax User Manual</title>
-<meta name="author" content="Neoklis Kyriazis" >
+<meta name="author" content="Neoklis" >
 <meta name="copyright" content="GPL v2.0 or higher">
 <meta name="keywords" content=
 "GUI Wefax/Radiofax decoder application">
@@ -49,9 +49,10 @@ List</a></li>
 </ol>
 <p><a name="Introduction" id=
 "Introduction"><b>1.Introduction</b></a><br>
-xwefax is an X/GTK+ Linux application for the decoding, displaying
-and saving of Wefax and Radiofax images, as received by an HF
-receiver, or as from version 2.1 with a Perseus SDR receiver.</p>
+xwefax is an X/GTK+-3 Linux application for the decoding,
+displaying and saving of Wefax and Radiofax images, as received by
+an HF receiver, or as from version 2.1 with a Perseus SDR
+receiver.</p>
 <p><a name="Use" id="Use"><b>Usage:</b></a> xwefax [-hv]</p>
 <p>-h: Print usage information and exit.</p>
 <p>-v: Print version number and exit.</p>
@@ -282,8 +283,8 @@ Please note that I use <a href="http://www.voidlinux.eu">Void
 Linux</a> which is a "bleeding edge" type distribution, so there
 may be compilation and/or run time difficulties if you are using a
 relatively old distro. This is mostly true of the basic
-dependencies like GTK+-2 and Glade-2, and there can also be sound
-card incompatibility problems at run time.</p>
+dependencies like GTK+-3, and there can also be sound card
+incompatibility problems at run time.</p>
 <p>Because this version of Xwefax has support for the Perseus SDR
 receiver, it is necessary to install the <a href=
 "https://github.com/Microtelecom/libperseus-sdr">libperseus-sdr</a>
@@ -323,7 +324,7 @@ xwefax can be invoked with the following options:</p>
 Operation</b></a><br></p>
 <p><a name="Interface" id="Interface"><b>xwefax User
 Interface</b></a><br>
-xwefax is an X/GTK+ application for Linux. The main application
+xwefax is an X/GTK+-3 application for Linux. The main application
 window has the following widgets:</p>
 <p>1. <b>The Wefax/Radiofax Image Viewport:</b> This is the main
 part of the xwefax application window and it is used to display the
@@ -332,7 +333,7 @@ on the window opens the main Pop up Menu. When image decoding is
 over, the displayed image is saved in a PGM file format in
 ~/xwefax/images/ folder The Wefax image can be processed, while it
 is being received, either by contrast stretching or bi-level
-(black-white) thresholding. These functions are selected from the
+(black-white) threshold ing. These functions are selected from the
 "Enhance Image" item in the Pop up Menu.</p>
 <p>2. <b>The Signal Input Display:</b> This is the small window at
 the bottom left of the xwefax application window, with the dark
@@ -407,8 +408,8 @@ selected from the list.<br>
 <b>o In Image Phasing:</b> Enable synchronization with in-image
 phasing pulses transmitted by some stations.<br>
 <b>o Image Enhancement:</b> Select "Normalize Image" to stretch the
-contrast of the image as it is being received or "Bi-level Image" to
-threshold the image to only Black or White values.<br>
+contrast of the image as it is being received or "Bi-level Image"
+to threshold the image to only Black or White values.<br>
 <b>o Image File Format:</b> Select the Image File format: JPEG, PGM
 or Both, if needed. xwefax has a simple built-in JPEG encoder for
 gray scale images that can reduce the image file size considerably.
@@ -632,6 +633,39 @@ by simple "box" averaging instead of skipping samples.</p>
 receiver so that WEFAX stations can be received with this device.
 There is no sound output though, as WEFAX stations are on fixed
 frequencies and tuning is done visually on the waterfall.</p>
+<p><b>Version 2.2:</b> I updated the GUI code to the latest
+GTK+-3.22. This made it necessary to make minor changes to the User
+Interface but functionality remains the same. An advantage of this
+version is that the GUI specification is in a Glade-3 XML file in
+the ~/xwefax/ folder (xwefax.glade), and this can be edited in
+Glade-3 if some cosmetic changes are desired, I migrated the
+internationalization system from "intltoolize" to GNU GetText, as
+the former is now considered obsolete. Also replaced the autogen.sh
+script with a newer version.</p>
+<p><b>Version 2.2.1:</b> I fixed some warnings produced by
+clang-analyzer although they mostly did not refer to real bugs of
+consequence. One bug report in the targeting code was real and had
+to be fixed.</p>
+<p><b>Version 2.3:</b> I arranged for autoconf/automake to only
+compile support for the Perseus SDR when the relevant libraries are
+installed.</p>
+<p><b>Version 2.4:</b> I fixed a bug in the above changes to the
+code and extended the conditional compilation to some more places
+in the source code.</p>
+<p><b>Version 2.4.1:</b> I have separated the pseudo-colorization
+code for the waterfall into a separate function and edited it to
+improve the colorization algorithm.</p>
+<p><b>Version 2.4.2:</b> Fixed a minor bug in the function that
+saves WEFAX images in the JPEG format, although it would not have
+had any significant impact on the saved images.</p>
+<p><b>Version 2.4.3:</b> Changed the installation commands in
+Makefile.am so that all the relevant files (desktop file,
+application pixmap, configuration file, executable binary etc) are
+installed under any location specified to the configure script by
+the --prefix= option. Also modified the program so that on first
+start up after installation, the application will create its
+working directory by copying files from the relevant directories
+under the installation prefix.</p>
 <p><a name="Copying" id="Copying"><b>8. Copying</b></a> This
 software package is released under the GNU Public License. Please
 see the COPYING file for more details.</p>
@@ -639,8 +673,5 @@ see the COPYING file for more details.</p>
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 General Public License for more details.</p>
-<p><!-- Created: Tue Jun 25 10:36:53 EEST 2002 -->
-<!-- hhmts start -->
-Last modified: Sat Mar 8 07:38:59 EET 2003 <!-- hhmts end --></p>
 </body>
 </html>

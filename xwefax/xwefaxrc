@@ -31,10 +31,10 @@ hw:0
 # PCM Device Name
 hw:0,0
 #
-# The sampling rate of the sound card's DSP. This should as 
+# The sampling rate of the sound card's DSP. This should as
 # far as possible be the native speed of the DSP to avoid
 # resampling, as it seems resampling distorts the signal.
-# The default is 48000 but for older cards it may be 44100
+# The default is 48000
 48000
 #
 # The "channel" to be used for sound capture. ALSA uses the
@@ -43,7 +43,7 @@ hw:0,0
 # surround sound etc there can be many inputs to choose from
 # to connect the audio o/p from a receiver. These are the
 # channel descriptions I know of (alsa-lib 1.0.20) that can be
-# used with xdemorse.
+# used with xwefax.
 # FRONT_LEFT
 # FRONT_RIGHT
 # REAR_LEFT
@@ -64,7 +64,7 @@ Capture
 #
 # Recording/Capture level: Useful range ~10-100%.
 # The correct value must be found by testing, see xwefax.html.
-100
+90
 #
 ####### End of SOUND-CARD CONFIGURATION #######
 #
@@ -72,12 +72,12 @@ Capture
 #
 # Use the Perseus SDR receiver for WEFAX reception. Specify PERSEUS
 # to use the SDR Rx or RADIO to use one of the Radios below.
-PERSEUS
-#RADIO
+#PERSEUS
+RADIO
 #
 # Correction for the Perseus' X/O frequency error (ppm). This is
 # usually around 5ppm and must be found using another SDR application.
-5.0
+0.0
 #
 # Correction for the error in the sampling rate of the Perseus SDR.
 # This value applies to my own unit but may be good enough for others.
@@ -86,7 +86,7 @@ PERSEUS
 # Enable CAT for Yaesu FT847 or FT857 or K3 transceiver.
 # Setting is FT847 or FT857 or K3 or NONE, if you have
 # some other transceiver or don't want CAT.
-K3
+NONE
 #
 # Serial port device for CAT: Please specify the serial port device
 # you intend to use for CAT control of your tranceiver. PLEASE NOTE:

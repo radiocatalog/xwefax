@@ -1,12 +1,4 @@
-/*  main.h
- *
- *  Main function and others for xwefax application
- */
-
 /*
- *  xwefax: An application to decode Radio WEFAX signals from
- *  a Radio Receiver, through the computer's sound card.
- *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License as
  *  published by the Free Software Foundation; either version 2 of
@@ -21,11 +13,10 @@
  */
 
 #ifndef MAIN_H
-#define MAIN_H		1
+#define MAIN_H      1
 
 #include "shared.h"
 #include "interface.h"
-#include "support.h"
 #include "utils.h"
 
 #endif

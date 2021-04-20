@@ -23,54 +23,53 @@
 
 #include "jpeg.h"
 
-jpec_buffer_t *jpec_buffer_new(void)
-{
-  return jpec_buffer_new2(-1);
-}
-
-jpec_buffer_t *jpec_buffer_new2(int siz)
+  static jpec_buffer_t
+*jpec_buffer_new2(int siz)
 {
   jpec_buffer_t *b = NULL;
   if(siz < 0) siz = 0;
   if( !mem_alloc((void **)&b, sizeof(*b)) )
-	return( NULL );
+    return( NULL );
   b->stream = NULL;
   if( siz > 0 )
-	if( !mem_alloc((void **)&(b->stream), (size_t)siz) )
-	  return( NULL );
+    if( !mem_alloc((void **)&(b->stream), (size_t)siz) )
+      return( NULL );
   b->siz = siz;
   b->len = 0;
   return b;
 }
 
-void jpec_buffer_del(jpec_buffer_t *b)
+  static void
+jpec_buffer_del(jpec_buffer_t *b)
 {
   assert(b);
   if(b->stream) free(b->stream);
   free(b);
 }
 
-void jpec_buffer_write_byte(jpec_buffer_t *b, int val)
+  static void
+jpec_buffer_write_byte(jpec_buffer_t *b, int val)
 {
   assert(b);
   if(b->siz == b->len)
   {
-	int nsiz = (b->siz > 0) ? 2 * b->siz : JPEC_BUFFER_INIT_SIZ;
-	if( !mem_realloc((void **)&(b->stream), (size_t)nsiz) )
-	  return;
-	b->siz = nsiz;
+    int nsiz = (b->siz > 0) ? 2 * b->siz : JPEC_BUFFER_INIT_SIZ;
+    if( !mem_realloc((void **)&(b->stream), (size_t)nsiz) )
+      return;
+    b->siz = nsiz;
   }
   b->stream[b->len++] = (uint8_t) val;
 }
 
-void jpec_buffer_write_2bytes(jpec_buffer_t *b, int val)
+  static void
+jpec_buffer_write_2bytes(jpec_buffer_t *b, int val)
 {
   assert(b);
   jpec_buffer_write_byte(b, (val >> 8) & 0xFF);
   jpec_buffer_write_byte(b, val & 0xFF);
 }
 
-const uint8_t jpec_qzr[64] =
+static const uint8_t jpec_qzr[64] =
 {
   16, 11, 10, 16, 24, 40, 51, 61,
   12, 12, 14, 19, 26, 58, 60, 55,
@@ -82,13 +81,13 @@ const uint8_t jpec_qzr[64] =
   72, 92, 95, 98,112,100,103, 99
 };
 
-const float jpec_dct[7] =
+static const float jpec_dct[7] =
 {
   0.49039f, 0.46194f, 0.41573f, 0.35355f,
   0.27779f, 0.19134f, 0.09755f
 };
 
-const int jpec_zz[64] =
+static const int jpec_zz[64] =
 {
   0,  1,  8, 16,  9,  2,  3, 10,
   17, 24, 32, 25, 18, 11,  4,  5,
@@ -100,13 +99,13 @@ const int jpec_zz[64] =
   53, 60, 61, 54, 47, 55, 62, 63
 };
 
-const uint8_t jpec_dc_nodes[17] = { 0,0,1,5,1,1,1,1,1,1,0,0,0,0,0,0,0 };
-const int jpec_dc_nb_vals = 12; /* sum of dc_nodes */
-const uint8_t jpec_dc_vals[12] = { 0,1,2,3,4,5,6,7,8,9,10,11 };
-const uint8_t jpec_ac_nodes[17] = { 0,0,2,1,3,3,2,4,3,5,5,4,4,0,0,1,0x7d };
-const int jpec_ac_nb_vals = 162; /* sum of ac_nodes */
+static const uint8_t jpec_dc_nodes[17] = { 0,0,1,5,1,1,1,1,1,1,0,0,0,0,0,0,0 };
+static const int jpec_dc_nb_vals = 12; /* sum of dc_nodes */
+static const uint8_t jpec_dc_vals[12] = { 0,1,2,3,4,5,6,7,8,9,10,11 };
+static const uint8_t jpec_ac_nodes[17] = { 0,0,2,1,3,3,2,4,3,5,5,4,4,0,0,1,0x7d };
+static const int jpec_ac_nb_vals = 162; /* sum of ac_nodes */
 
-const uint8_t jpec_ac_vals[162] =
+static const uint8_t jpec_ac_vals[162] =
 {
   0x01,0x02,0x03,0x00,0x04,0x11,0x05,0x12, /* 0x00: EOB */
   0x21,0x31,0x41,0x06,0x13,0x51,0x61,0x07,
@@ -131,14 +130,14 @@ const uint8_t jpec_ac_vals[162] =
   0xf9,0xfa
 };
 
-const uint8_t jpec_dc_len[12] = { 2,3,3,3,3,3,4,5,6,7,8,9 };
-const int jpec_dc_code[12] =
+static const uint8_t jpec_dc_len[12] = { 2,3,3,3,3,3,4,5,6,7,8,9 };
+static const int jpec_dc_code[12] =
 {
   0x000,0x002,0x003,0x004,0x005,0x006,
   0x00e,0x01e,0x03e,0x07e,0x0fe,0x1fe
 };
 
-const int8_t jpec_ac_len[256] =
+static const int8_t jpec_ac_len[256] =
 {
   4, 2, 2, 3, 4, 5, 7, 8,
   10,16,16, 0, 0, 0, 0, 0,
@@ -174,7 +173,7 @@ const int8_t jpec_ac_len[256] =
   16,16,16, 0, 0, 0, 0, 0
 };
 
-const int jpec_ac_code[256] =
+static const int jpec_ac_code[256] =
 {
   0x000a,0x0000,0x0001,0x0004,0x000b,0x001a,0x0078,0x00f8,
   0x03f6,0xff82,0xff83,0x0000,0x0000,0x0000,0x0000,0x0000,
@@ -210,17 +209,13 @@ const int jpec_ac_code[256] =
   0xfffc,0xfffd,0xfffe,0x0000,0x0000,0x0000,0x0000,0x0000
 };
 
-jpec_enc_t *jpec_enc_new(const uint8_t *img, uint16_t w, uint16_t h)
-{
-  return jpec_enc_new2(img, w, h, JPEG_ENC_DEF_QUAL);
-}
-
-jpec_enc_t *jpec_enc_new2(const uint8_t *img, uint16_t w, uint16_t h, int q)
+  static jpec_enc_t
+*jpec_enc_new2(const uint8_t *img, uint16_t w, uint16_t h, int q)
 {
   assert(img && w > 0 && !(w & 0x7) && h > 0 && !(h & 0x7));
   jpec_enc_t *e = NULL;
   if( !mem_alloc((void **)&e, sizeof(*e)) )
-	return(NULL);
+    return(NULL);
   e->img = img;
   e->w = w;
   e->w8 = (uint16_t)((((w-1)>>3)+1)<<3);
@@ -234,11 +229,18 @@ jpec_enc_t *jpec_enc_new2(const uint8_t *img, uint16_t w, uint16_t h, int q)
   e->buf = jpec_buffer_new2(bsiz);
   e->hskel = NULL;
   if( !mem_alloc((void **)&(e->hskel), sizeof(*e->hskel)) )
-	return(NULL);
+    return(NULL);
   return e;
 }
 
-void jpec_enc_del(jpec_enc_t *e)
+  jpec_enc_t
+*jpec_enc_new(const uint8_t *img, uint16_t w, uint16_t h)
+{
+  return jpec_enc_new2(img, w, h, JPEG_ENC_DEF_QUAL);
+}
+
+  void
+jpec_enc_del(jpec_enc_t *e)
 {
   assert(e);
   if(e->buf) jpec_buffer_del(e->buf);
@@ -246,64 +248,31 @@ void jpec_enc_del(jpec_enc_t *e)
   free(e);
 }
 
-const uint8_t *jpec_enc_run(jpec_enc_t *e, int *len)
-{
-  assert(e && len);
-  jpec_enc_open(e);
-  while(jpec_enc_next_block(e))
-  {
-	jpec_enc_block_dct(e);
-	jpec_enc_block_quant(e);
-	jpec_enc_block_zz(e);
-	e->hskel->encode_block(e->hskel->opq, &e->block, e->buf);
-  }
-  jpec_enc_close(e);
-  *len = e->buf->len;
-  return e->buf->stream;
-}
-
 /* Update the internal quantization
  * matrix according to the asked quality */
-void jpec_enc_init_dqt(jpec_enc_t *e)
+  static void
+jpec_enc_init_dqt(jpec_enc_t *e)
 {
   assert(e);
   float qualf = (float) e->qual;
   float scale = (e->qual < 50) ? (50/qualf) : (2 - qualf/50);
   for(int i = 0; i < 64; i++)
   {
-	int a = (int) ((float) jpec_qzr[i]*scale + 0.5);
-	a = (a < 1) ? 1 : ((a > 255) ? 255 : a);
-	e->dqt[i] = a;
+    int a = (int) ((float)(jpec_qzr[i]) * scale + (float)0.5);
+    a = (a < 1) ? 1 : ((a > 255) ? 255 : a);
+    e->dqt[i] = a;
   }
 }
 
-void jpec_enc_open(jpec_enc_t *e)
-{
-  assert(e);
-  jpec_huff_skel_init(e->hskel);
-  jpec_enc_init_dqt(e);
-  jpec_enc_write_soi(e);
-  jpec_enc_write_app0(e);
-  jpec_enc_write_dqt(e);
-  jpec_enc_write_sof0(e);
-  jpec_enc_write_dht(e);
-  jpec_enc_write_sos(e);
-}
-
-void jpec_enc_close(jpec_enc_t *e)
-{
-  assert(e);
-  e->hskel->del(e->hskel->opq);
-  jpec_buffer_write_2bytes(e->buf, 0xFFD9); /* EOI marker */
-}
-
-void jpec_enc_write_soi(jpec_enc_t *e)
+  static void
+jpec_enc_write_soi(jpec_enc_t *e)
 {
   assert(e);
   jpec_buffer_write_2bytes(e->buf, 0xFFD8); /* SOI marker */
 }
 
-void jpec_enc_write_app0(jpec_enc_t *e)
+  static void
+jpec_enc_write_app0(jpec_enc_t *e)
 {
   assert(e);
   jpec_buffer_write_2bytes(e->buf, 0xFFE0); /* APP0 marker */
@@ -321,7 +290,8 @@ void jpec_enc_write_app0(jpec_enc_t *e)
   jpec_buffer_write_byte(e->buf, 0x00);     /* thumbnail height = 0 */
 }
 
-void jpec_enc_write_dqt(jpec_enc_t *e)
+  static void
+jpec_enc_write_dqt(jpec_enc_t *e)
 {
   assert(e);
   jpec_buffer_write_2bytes(e->buf, 0xFFDB); /* DQT marker */
@@ -329,11 +299,12 @@ void jpec_enc_write_dqt(jpec_enc_t *e)
   jpec_buffer_write_byte(e->buf, 0x00);     /* table 0, 8-bit precision (0) */
   for(int i = 0; i < 64; i++)
   {
-	jpec_buffer_write_byte(e->buf, e->dqt[jpec_zz[i]]);
+    jpec_buffer_write_byte(e->buf, e->dqt[jpec_zz[i]]);
   }
 }
 
-void jpec_enc_write_sof0(jpec_enc_t *e)
+  static void
+jpec_enc_write_sof0(jpec_enc_t *e)
 {
   assert(e);
   jpec_buffer_write_2bytes(e->buf, 0xFFC0); /* SOF0 marker */
@@ -347,7 +318,8 @@ void jpec_enc_write_sof0(jpec_enc_t *e)
   jpec_buffer_write_byte(e->buf, 0x00);     /* quantization table 0 */
 }
 
-void jpec_enc_write_dht(jpec_enc_t *e)
+  static void
+jpec_enc_write_dht(jpec_enc_t *e)
 {
   assert(e);
   jpec_buffer_write_2bytes(e->buf, 0xFFC4); /* DHT marker */
@@ -356,12 +328,12 @@ void jpec_enc_write_dht(jpec_enc_t *e)
 
   for(int i = 0; i < 16; i++)
   {
-	jpec_buffer_write_byte(e->buf, jpec_dc_nodes[i+1]);
+    jpec_buffer_write_byte(e->buf, jpec_dc_nodes[i+1]);
   }
 
   for(int i = 0; i < jpec_dc_nb_vals; i++)
   {
-	jpec_buffer_write_byte(e->buf, jpec_dc_vals[i]);
+    jpec_buffer_write_byte(e->buf, jpec_dc_vals[i]);
   }
 
   jpec_buffer_write_2bytes(e->buf, 0xFFC4); /* DHT marker */
@@ -370,16 +342,17 @@ void jpec_enc_write_dht(jpec_enc_t *e)
 
   for(int i = 0; i < 16; i++)
   {
-	jpec_buffer_write_byte(e->buf, jpec_ac_nodes[i+1]);
+    jpec_buffer_write_byte(e->buf, jpec_ac_nodes[i+1]);
   }
 
   for(int i = 0; i < jpec_ac_nb_vals; i++)
   {
-	jpec_buffer_write_byte(e->buf, jpec_ac_vals[i]);
+    jpec_buffer_write_byte(e->buf, jpec_ac_vals[i]);
   }
 }
 
-void jpec_enc_write_sos(jpec_enc_t *e)
+  static void
+jpec_enc_write_sos(jpec_enc_t *e)
 {
   assert(e);
   jpec_buffer_write_2bytes(e->buf, 0xFFDA); /* SOS marker */
@@ -394,221 +367,17 @@ void jpec_enc_write_sos(jpec_enc_t *e)
   jpec_buffer_write_byte(e->buf, 0x00);
 }
 
-int jpec_enc_next_block(jpec_enc_t *e)
-{
-  assert(e);
-  int rv = (++e->bnum >= e->bmax) ? 0 : 1;
-  if(rv)
-  {
-	e->bx =   (e->bnum << 3) % e->w8;
-	e->by = (uint16_t)( ((e->bnum << 3) / e->w8) << 3);
-  }
-  return rv;
-}
-
-void jpec_enc_block_dct(jpec_enc_t *e)
-{
-  assert(e && e->bnum >= 0);
-#define JPEC_BLOCK(col,row) \
-  e->img[(((e->by + row) < e->h) ? e->by + row : e->h-1) * \
-  e->w + (((e->bx + col) < e->w) ? e->bx + col : e->w-1)]
-  const float* coeff = jpec_dct;
-  float tmp[64];
-
-  for(int row = 0; row < 8; row++)
-  {
-	/* NOTE: the shift by 256 allows resampling from [0 255] to [–128 127] */
-	float s0 = (float) (JPEC_BLOCK(0, row) + JPEC_BLOCK(7, row) - 256);
-	float s1 = (float) (JPEC_BLOCK(1, row) + JPEC_BLOCK(6, row) - 256);
-	float s2 = (float) (JPEC_BLOCK(2, row) + JPEC_BLOCK(5, row) - 256);
-	float s3 = (float) (JPEC_BLOCK(3, row) + JPEC_BLOCK(4, row) - 256);
-
-	float d0 = (float) (JPEC_BLOCK(0, row) - JPEC_BLOCK(7, row));
-	float d1 = (float) (JPEC_BLOCK(1, row) - JPEC_BLOCK(6, row));
-	float d2 = (float) (JPEC_BLOCK(2, row) - JPEC_BLOCK(5, row));
-	float d3 = (float) (JPEC_BLOCK(3, row) - JPEC_BLOCK(4, row));
-
-	tmp[8 * row]     = coeff[3]*(s0+s1+s2+s3);
-	tmp[8 * row + 1] = coeff[0]*d0+coeff[2]*d1+coeff[4]*d2+coeff[6]*d3;
-	tmp[8 * row + 2] = coeff[1]*(s0-s3)+coeff[5]*(s1-s2);
-	tmp[8 * row + 3] = coeff[2]*d0-coeff[6]*d1-coeff[0]*d2-coeff[4]*d3;
-	tmp[8 * row + 4] = coeff[3]*(s0-s1-s2+s3);
-	tmp[8 * row + 5] = coeff[4]*d0-coeff[0]*d1+coeff[6]*d2+coeff[2]*d3;
-	tmp[8 * row + 6] = coeff[5]*(s0-s3)+coeff[1]*(s2-s1);
-	tmp[8 * row + 7] = coeff[6]*d0-coeff[4]*d1+coeff[2]*d2-coeff[0]*d3;
-  }
-
-  for(int col = 0; col < 8; col++)
-  {
-	float s0 = tmp[     col] + tmp[56 + col];
-	float s1 = tmp[ 8 + col] + tmp[48 + col];
-	float s2 = tmp[16 + col] + tmp[40 + col];
-	float s3 = tmp[24 + col] + tmp[32 + col];
-
-	float d0 = tmp[     col] - tmp[56 + col];
-	float d1 = tmp[ 8 + col] - tmp[48 + col];
-	float d2 = tmp[16 + col] - tmp[40 + col];
-	float d3 = tmp[24 + col] - tmp[32 + col];
-
-	e->block.dct[     col] = coeff[3]*(s0+s1+s2+s3);
-	e->block.dct[ 8 + col] = coeff[0]*d0+coeff[2]*d1+coeff[4]*d2+coeff[6]*d3;
-	e->block.dct[16 + col] = coeff[1]*(s0-s3)+coeff[5]*(s1-s2);
-	e->block.dct[24 + col] = coeff[2]*d0-coeff[6]*d1-coeff[0]*d2-coeff[4]*d3;
-	e->block.dct[32 + col] = coeff[3]*(s0-s1-s2+s3);
-	e->block.dct[40 + col] = coeff[4]*d0-coeff[0]*d1+coeff[6]*d2+coeff[2]*d3;
-	e->block.dct[48 + col] = coeff[5]*(s0-s3)+coeff[1]*(s2-s1);
-	e->block.dct[56 + col] = coeff[6]*d0-coeff[4]*d1+coeff[2]*d2-coeff[0]*d3;
-  }
-
-#undef JPEC_BLOCK
-}
-
-void jpec_enc_block_quant(jpec_enc_t *e)
-{
-  assert(e && e->bnum >= 0);
-  for(int i = 0; i < 64; i++)
-  {
-	e->block.quant[i] = (int) (e->block.dct[i]/e->dqt[i]);
-  }
-}
-
-void jpec_enc_block_zz(jpec_enc_t *e)
-{
-  assert(e && e->bnum >= 0);
-  e->block.len = 0;
-  for(int i = 0; i < 64; i++)
-  {
-	if((e->block.zz[i] = e->block.quant[jpec_zz[i]]))
-	  e->block.len = i + 1;
-  }
-}
-
-#ifdef WORD_BIT
-#define JPEC_INT_WIDTH WORD_BIT
-#else
-#define JPEC_INT_WIDTH (int)(sizeof(int) * CHAR_BIT)
-#endif
-
-#if __GNUC__
-#define JPEC_HUFF_NBITS(JPEC_nbits, JPEC_val) \
-  JPEC_nbits = (!JPEC_val) ? 0 : JPEC_INT_WIDTH - __builtin_clz(JPEC_val)
-#else
-#define JPEC_HUFF_NBITS(JPEC_nbits, JPEC_val) \
-  JPEC_nbits = 0; \
-while(val) { \
-  JPEC_nbits++; \
-  val >>= 1; \
-}
-#endif
-
-void jpec_huff_skel_init(jpec_huff_skel_t *skel)
-{
-  assert(skel);
-  memset(skel, 0, sizeof(*skel));
-  skel->opq = jpec_huff_new();
-  skel->del = (void (*)(void *))jpec_huff_del;
-  skel->encode_block =
-	(void (*)(void *, jpec_block_t *, jpec_buffer_t *))jpec_huff_encode_block;
-}
-
-jpec_huff_t *jpec_huff_new(void)
+  static jpec_huff_t
+*jpec_huff_new(void)
 {
   jpec_huff_t *h = NULL;
   if( !mem_alloc((void **)&h, sizeof(*h)) )
-	return(NULL);
+    return(NULL);
   h->state.buffer = 0;
   h->state.nbits = 0;
   h->state.dc = 0;
   h->state.buf = NULL;
   return h;
-}
-
-void jpec_huff_del(jpec_huff_t *h)
-{
-  assert(h);
-  /* Flush any remaining bits and fill in
-   * the incomple byte (if any) with 1-s */
-  jpec_huff_write_bits(&h->state, 0x7F, 7);
-  free(h);
-}
-
-void jpec_huff_encode_block(jpec_huff_t *h, jpec_block_t *block, jpec_buffer_t *buf)
-{
-  assert(h && block && buf);
-  jpec_huff_state_t state;
-  state.buffer = h->state.buffer;
-  state.nbits = h->state.nbits;
-  state.dc = h->state.dc;
-  state.buf = buf;
-  jpec_huff_encode_block_impl(block, &state);
-  h->state.buffer = state.buffer;
-  h->state.nbits = state.nbits;
-  h->state.dc = state.dc;
-  h->state.buf = state.buf;
-}
-
-void jpec_huff_encode_block_impl(jpec_block_t *block, jpec_huff_state_t *s)
-{
-  assert(block && s);
-  int val, bits, nbits;
-
-  /* DC coefficient encoding */
-  if(block->len > 0)
-  {
-	val = block->zz[0] - s->dc;
-	s->dc = block->zz[0];
-  }
-  else
-  {
-	val = -s->dc;
-	s->dc = 0;
-  }
-  bits = val;
-
-  if(val < 0)
-  {
-	val = -val;
-	bits = ~val;
-  }
-
-  JPEC_HUFF_NBITS(nbits, (unsigned int)val);
-  jpec_huff_write_bits(s, (unsigned int)jpec_dc_code[nbits], jpec_dc_len[nbits]);
-  if(nbits) jpec_huff_write_bits(s, (unsigned int) bits, nbits);
-
-  /* AC coefficients encoding (w/ RLE of zeros) */
-  int nz = 0;
-  for(int i = 1; i < block->len; i++)
-  {
-	if((val = block->zz[i]) == 0) nz++;
-	else
-	{
-	  while(nz >= 16)
-	  {
-		/* ZRL code */
-		jpec_huff_write_bits(s, (unsigned int)jpec_ac_code[0xF0], jpec_ac_len[0xF0]);
-		nz -= 16;
-	  }
-
-	  bits = val;
-	  if(val < 0)
-	  {
-		val = -val;
-		bits = ~val;
-	  }
-
-	  JPEC_HUFF_NBITS(nbits, (unsigned int)val);
-	  int j = (nz << 4) + nbits;
-	  jpec_huff_write_bits(s, (unsigned int)jpec_ac_code[j], jpec_ac_len[j]);
-	  if(nbits) jpec_huff_write_bits(s, (unsigned int) bits, nbits);
-	  nz = 0;
-	}
-  }
-
-  if(block->len < 64)
-  {
-	/* EOB marker */
-	jpec_huff_write_bits(s, (unsigned int)jpec_ac_code[0x00], jpec_ac_len[0x00]);
-  }
 }
 
 /* Write n bits into the JPEG buffer, with 0 < n <= 16.
@@ -625,7 +394,8 @@ void jpec_huff_encode_block_impl(jpec_block_t *block, jpec_huff_state_t *s)
  *   first transformed by bitwise complement(|initial value|)
  * - if an 0xFF byte is detected a 0x00 stuff byte is automatically written right after
  */
-void jpec_huff_write_bits(jpec_huff_state_t *s, unsigned int bits, int n)
+  static void
+jpec_huff_write_bits(jpec_huff_state_t *s, unsigned int bits, int n)
 {
   assert(s && n > 0 && n <= 16);
   int32_t mask = (((int32_t) 1) << n) - 1;
@@ -638,13 +408,278 @@ void jpec_huff_write_bits(jpec_huff_state_t *s, unsigned int bits, int n)
 
   while(nbits >= 8)
   {
-	int chunk = (int) ((buffer >> 16) & 0xFF);
-	jpec_buffer_write_byte(s->buf, chunk);
-	if(chunk == 0xFF) jpec_buffer_write_byte(s->buf, 0x00);
-	buffer <<= 8;
-	nbits -= 8;
+    int chunk = (int) ((buffer >> 16) & 0xFF);
+    jpec_buffer_write_byte(s->buf, chunk);
+    if(chunk == 0xFF) jpec_buffer_write_byte(s->buf, 0x00);
+    buffer <<= 8;
+    nbits -= 8;
   }
 
   s->buffer = buffer;
   s->nbits = nbits;
 }
+
+  static void
+jpec_huff_del(jpec_huff_t *h)
+{
+  assert(h);
+  /* Flush any remaining bits and fill in
+   * the incomple byte (if any) with 1-s */
+  jpec_huff_write_bits(&h->state, 0x7F, 7);
+  free(h);
+}
+
+#ifdef WORD_BIT
+#define JPEC_INT_WIDTH WORD_BIT
+#else
+#define JPEC_INT_WIDTH (int)(sizeof(int) * CHAR_BIT)
+#endif
+
+#if __GNUC__
+#define JPEC_HUFF_NBITS(JPEC_nbits, JPEC_val) \
+  JPEC_nbits = (!JPEC_val) ? 0 : JPEC_INT_WIDTH - __builtin_clz(JPEC_val)
+#else
+#define JPEC_HUFF_NBITS(JPEC_nbits, JPEC_val) \
+  JPEC_nbits = 0; \
+  while(val) { \
+    JPEC_nbits++; \
+    val >>= 1; \
+  }
+#endif
+
+#if __GNUC__
+#define JPEC_HUFF_NBITS(JPEC_nbits, JPEC_val) \
+  JPEC_nbits = (!JPEC_val) ? 0 : JPEC_INT_WIDTH - __builtin_clz(JPEC_val)
+#else
+#define JPEC_HUFF_NBITS(JPEC_nbits, JPEC_val) \
+  JPEC_nbits = 0; \
+  while(val) { \
+    JPEC_nbits++; \
+    val >>= 1; \
+  }
+#endif
+
+  static void
+jpec_huff_encode_block_impl(jpec_block_t *block, jpec_huff_state_t *s)
+{
+  assert(block && s);
+  int val, bits, nbits;
+
+  /* DC coefficient encoding */
+  if(block->len > 0)
+  {
+    val = block->zz[0] - s->dc;
+    s->dc = block->zz[0];
+  }
+  else
+  {
+    val = -s->dc;
+    s->dc = 0;
+  }
+  bits = val;
+
+  if(val < 0)
+  {
+    val = -val;
+    bits = ~val;
+  }
+
+  JPEC_HUFF_NBITS(nbits, (unsigned int)val);
+  jpec_huff_write_bits(s, (unsigned int)jpec_dc_code[nbits], jpec_dc_len[nbits]);
+  if(nbits) jpec_huff_write_bits(s, (unsigned int) bits, nbits);
+
+  /* AC coefficients encoding (w/ RLE of zeros) */
+  int nz = 0;
+  for(int i = 1; i < block->len; i++)
+  {
+    if((val = block->zz[i]) == 0) nz++;
+    else
+    {
+      while(nz >= 16)
+      {
+        /* ZRL code */
+        jpec_huff_write_bits(s, (unsigned int)jpec_ac_code[0xF0], jpec_ac_len[0xF0]);
+        nz -= 16;
+      }
+
+      bits = val;
+      if(val < 0)
+      {
+        val = -val;
+        bits = ~val;
+      }
+
+      JPEC_HUFF_NBITS(nbits, (unsigned int)val);
+      int j = (nz << 4) + nbits;
+      jpec_huff_write_bits(s, (unsigned int)jpec_ac_code[j], jpec_ac_len[j]);
+      if(nbits) jpec_huff_write_bits(s, (unsigned int) bits, nbits);
+      nz = 0;
+    }
+  }
+
+  if(block->len < 64)
+  {
+    /* EOB marker */
+    jpec_huff_write_bits(s, (unsigned int)jpec_ac_code[0x00], jpec_ac_len[0x00]);
+  }
+}
+
+  static void
+jpec_huff_encode_block(jpec_huff_t *h, jpec_block_t *block, jpec_buffer_t *buf)
+{
+  assert(h && block && buf);
+  jpec_huff_state_t state;
+  state.buffer = h->state.buffer;
+  state.nbits = h->state.nbits;
+  state.dc = h->state.dc;
+  state.buf = buf;
+  jpec_huff_encode_block_impl(block, &state);
+  h->state.buffer = state.buffer;
+  h->state.nbits = state.nbits;
+  h->state.dc = state.dc;
+  h->state.buf = state.buf;
+}
+
+  static void
+jpec_huff_skel_init(jpec_huff_skel_t *skel)
+{
+  assert(skel);
+  memset(skel, 0, sizeof(*skel));
+  skel->opq = jpec_huff_new();
+  skel->del = (void (*)(void *))jpec_huff_del;
+  skel->encode_block =
+    (void (*)(void *, jpec_block_t *, jpec_buffer_t *))jpec_huff_encode_block;
+}
+
+  static void
+jpec_enc_open(jpec_enc_t *e)
+{
+  assert(e);
+  jpec_huff_skel_init(e->hskel);
+  jpec_enc_init_dqt(e);
+  jpec_enc_write_soi(e);
+  jpec_enc_write_app0(e);
+  jpec_enc_write_dqt(e);
+  jpec_enc_write_sof0(e);
+  jpec_enc_write_dht(e);
+  jpec_enc_write_sos(e);
+}
+
+  static void
+jpec_enc_close(jpec_enc_t *e)
+{
+  assert(e);
+  e->hskel->del(e->hskel->opq);
+  jpec_buffer_write_2bytes(e->buf, 0xFFD9); /* EOI marker */
+}
+
+  static int
+jpec_enc_next_block(jpec_enc_t *e)
+{
+  assert(e);
+  int rv = (++e->bnum >= e->bmax) ? 0 : 1;
+  if(rv)
+  {
+    e->bx =   (e->bnum << 3) % e->w8;
+    e->by = (uint16_t)( ((e->bnum << 3) / e->w8) << 3);
+  }
+  return rv;
+}
+
+  static void
+jpec_enc_block_dct(jpec_enc_t *e)
+{
+  assert(e && e->bnum >= 0);
+#define JPEC_BLOCK(col,row) \
+  e->img[(((e->by + row) < e->h) ? e->by + row : e->h-1) * \
+  e->w + (((e->bx + col) < e->w) ? e->bx + col : e->w-1)]
+  const float* coeff = jpec_dct;
+  float tmp[64];
+
+  for(int row = 0; row < 8; row++)
+  {
+    /* NOTE: the shift by 256 allows resampling from [0 255] to [–128 127] */
+    float s0 = (float) (JPEC_BLOCK(0, row) + JPEC_BLOCK(7, row) - 256);
+    float s1 = (float) (JPEC_BLOCK(1, row) + JPEC_BLOCK(6, row) - 256);
+    float s2 = (float) (JPEC_BLOCK(2, row) + JPEC_BLOCK(5, row) - 256);
+    float s3 = (float) (JPEC_BLOCK(3, row) + JPEC_BLOCK(4, row) - 256);
+
+    float d0 = (float) (JPEC_BLOCK(0, row) - JPEC_BLOCK(7, row));
+    float d1 = (float) (JPEC_BLOCK(1, row) - JPEC_BLOCK(6, row));
+    float d2 = (float) (JPEC_BLOCK(2, row) - JPEC_BLOCK(5, row));
+    float d3 = (float) (JPEC_BLOCK(3, row) - JPEC_BLOCK(4, row));
+
+    tmp[8 * row]     = coeff[3]*(s0+s1+s2+s3);
+    tmp[8 * row + 1] = coeff[0]*d0+coeff[2]*d1+coeff[4]*d2+coeff[6]*d3;
+    tmp[8 * row + 2] = coeff[1]*(s0-s3)+coeff[5]*(s1-s2);
+    tmp[8 * row + 3] = coeff[2]*d0-coeff[6]*d1-coeff[0]*d2-coeff[4]*d3;
+    tmp[8 * row + 4] = coeff[3]*(s0-s1-s2+s3);
+    tmp[8 * row + 5] = coeff[4]*d0-coeff[0]*d1+coeff[6]*d2+coeff[2]*d3;
+    tmp[8 * row + 6] = coeff[5]*(s0-s3)+coeff[1]*(s2-s1);
+    tmp[8 * row + 7] = coeff[6]*d0-coeff[4]*d1+coeff[2]*d2-coeff[0]*d3;
+  }
+
+  for(int col = 0; col < 8; col++)
+  {
+    float s0 = tmp[     col] + tmp[56 + col];
+    float s1 = tmp[ 8 + col] + tmp[48 + col];
+    float s2 = tmp[16 + col] + tmp[40 + col];
+    float s3 = tmp[24 + col] + tmp[32 + col];
+
+    float d0 = tmp[     col] - tmp[56 + col];
+    float d1 = tmp[ 8 + col] - tmp[48 + col];
+    float d2 = tmp[16 + col] - tmp[40 + col];
+    float d3 = tmp[24 + col] - tmp[32 + col];
+
+    e->block.dct[     col] = coeff[3]*(s0+s1+s2+s3);
+    e->block.dct[ 8 + col] = coeff[0]*d0+coeff[2]*d1+coeff[4]*d2+coeff[6]*d3;
+    e->block.dct[16 + col] = coeff[1]*(s0-s3)+coeff[5]*(s1-s2);
+    e->block.dct[24 + col] = coeff[2]*d0-coeff[6]*d1-coeff[0]*d2-coeff[4]*d3;
+    e->block.dct[32 + col] = coeff[3]*(s0-s1-s2+s3);
+    e->block.dct[40 + col] = coeff[4]*d0-coeff[0]*d1+coeff[6]*d2+coeff[2]*d3;
+    e->block.dct[48 + col] = coeff[5]*(s0-s3)+coeff[1]*(s2-s1);
+    e->block.dct[56 + col] = coeff[6]*d0-coeff[4]*d1+coeff[2]*d2-coeff[0]*d3;
+  }
+
+#undef JPEC_BLOCK
+}
+
+  static void
+jpec_enc_block_quant(jpec_enc_t *e)
+{
+  assert(e && e->bnum >= 0);
+  for(int i = 0; i < 64; i++)
+  {
+    e->block.quant[i] = (int) (e->block.dct[i] / (float)e->dqt[i]);
+  }
+}
+
+  static void
+jpec_enc_block_zz(jpec_enc_t *e)
+{
+  assert(e && e->bnum >= 0);
+  e->block.len = 0;
+  for(int i = 0; i < 64; i++)
+  {
+    if((e->block.zz[i] = e->block.quant[jpec_zz[i]]))
+      e->block.len = i + 1;
+  }
+}
+
+  const uint8_t
+*jpec_enc_run(jpec_enc_t *e, int *len)
+{
+  assert(e && len);
+  jpec_enc_open(e);
+  while(jpec_enc_next_block(e))
+  {
+    jpec_enc_block_dct(e);
+    jpec_enc_block_quant(e);
+    jpec_enc_block_zz(e);
+    e->hskel->encode_block(e->hskel->opq, &e->block, e->buf);
+  }
+  jpec_enc_close(e);
+  *len = e->buf->len;
+  return e->buf->stream;
+}
+

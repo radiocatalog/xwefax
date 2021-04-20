@@ -1,0 +1,850 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Neoklis Kyriazis nkcyham@yahoo.com
+# This file is distributed under the same license as the GNU xwefax package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GNU xwefax 2.4.3\n"
+"Report-Msgid-Bugs-To: nkcyham@yahoo.com\n"
+"POT-Creation-Date: 2021-04-20 11:52+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/cat.c:191
+msgid "Setting up TCVR CAT ..."
+msgstr ""
+
+#: src/cat.c:198
+#, c-format
+msgid ""
+"Failed to open %s\n"
+"Transceiver CAT not setup"
+msgstr ""
+
+#: src/cat.c:223
+#, c-format
+msgid ""
+"Failed to lock %s\n"
+"Device locked by pid %d\n"
+"Transceiver CAT not setup"
+msgstr ""
+
+#: src/cat.c:231
+#, c-format
+msgid ""
+"Failed to lock %s\n"
+"Transceiver CAT not setup"
+msgstr ""
+
+#: src/cat.c:350
+msgid "TCVR CAT set up OK"
+msgstr ""
+
+#: src/cat.c:368
+msgid "Closing down TCVR CAT"
+msgstr ""
+
+#: src/detect.c:412
+msgid "Skipping Phasing Pulse Sync"
+msgstr ""
+
+#: src/detect.c:413 src/detect.c:497
+msgid "Starting WEFAX Image Decoder ..."
+msgstr ""
+
+#: src/detect.c:414 src/detect.c:498
+msgid "Listening for Stop Tone ..."
+msgstr ""
+
+#: src/detect.c:496
+msgid "Phasing Pulse Synching ended"
+msgstr ""
+
+#: src/detect.c:642
+msgid "Skipping Start Tone Detection"
+msgstr ""
+
+#: src/detect.c:643 src/detect.c:659
+msgid "Synchronizing Phasing Pulses ..."
+msgstr ""
+
+#: src/detect.c:658
+msgid "Start Tone Detected"
+msgstr ""
+
+#: src/detect.c:702
+msgid "Stop Tone Detected"
+msgstr ""
+
+#: src/display.c:557
+msgid ""
+"Image line length zero\n"
+"Normalization not performed"
+msgstr ""
+
+#: src/main.c:176
+msgid " STANDBY "
+msgstr ""
+
+#: src/main.c:184
+#, c-format
+msgid "Welcome to %s"
+msgstr ""
+
+#: src/main.c:215
+msgid "xwefax: Exiting via User Interrupt"
+msgstr ""
+
+#: src/main.c:219
+msgid "xwefax: Segmentation Fault"
+msgstr ""
+
+#: src/main.c:223
+msgid "xwefax: Floating Point Exception"
+msgstr ""
+
+#: src/main.c:227
+msgid "xwefax: Abort Signal received"
+msgstr ""
+
+#: src/main.c:231
+msgid "xwefax: Termination Request received"
+msgstr ""
+
+#: src/perseus.c:52
+#, c-format
+msgid ""
+"Perseus: perseus_set_attenuator() error:\n"
+"%s"
+msgstr ""
+
+#: src/perseus.c:341
+#, c-format
+msgid "perseus_start_async_input() returned %s\n"
+msgstr ""
+
+#: src/perseus.c:370 src/perseus.c:519
+msgid "Failed to set DDC Center Frequency"
+msgstr ""
+
+#: src/perseus.c:434
+msgid "No Perseus Receivers detected"
+msgstr ""
+
+#: src/perseus.c:444
+#, c-format
+msgid ""
+"Failed to open Perseus Receiver:\n"
+"%s"
+msgstr ""
+
+#: src/perseus.c:456
+#, c-format
+msgid ""
+"Perseus Firmware download error:\n"
+"%s"
+msgstr ""
+
+#: src/perseus.c:487
+#, c-format
+msgid ""
+"Perseus fpga configuration error:\n"
+"%s"
+msgstr ""
+
+#: src/perseus.c:506
+#, c-format
+msgid ""
+"Perseus perseus_set_adc() error:\n"
+"%s"
+msgstr ""
+
+#: src/perseus.c:539
+msgid "Failed to create Perseus Async Read thread"
+msgstr ""
+
+#: src/sound.c:47
+msgid "Setting up Sound Card ... "
+msgstr ""
+
+#: src/sound.c:48
+msgid "Opening PCM Device ... "
+msgstr ""
+
+#: src/sound.c:55
+msgid "Cannot open sound device "
+msgstr ""
+
+#: src/sound.c:64
+msgid "Cannot allocate hw_params struct"
+msgstr ""
+
+#: src/sound.c:72
+msgid "Cannot initialize hw_params struct"
+msgstr ""
+
+#: src/sound.c:81
+msgid "Cannot set PCM access type"
+msgstr ""
+
+#: src/sound.c:90
+msgid "Cannot set sample format"
+msgstr ""
+
+#: src/sound.c:100
+#, c-format
+msgid "Cannot set sample rate to %d"
+msgstr ""
+
+#: src/sound.c:110
+#, c-format
+msgid "Cannot set channel count to %d"
+msgstr ""
+
+#: src/sound.c:120
+#, c-format
+msgid "Cannot set number periods to %d"
+msgstr ""
+
+#: src/sound.c:130
+#, c-format
+msgid "Cannot set period size to %d"
+msgstr ""
+
+#: src/sound.c:138
+msgid "Cannot set capture parameters"
+msgstr ""
+
+#: src/sound.c:148
+msgid "Cannot prepare audio interface"
+msgstr ""
+
+#: src/sound.c:152
+msgid "PCM Device opened OK"
+msgstr ""
+
+#: src/sound.c:172
+msgid "Opening Mixer Device ..."
+msgstr ""
+
+#: src/sound.c:176
+msgid "Cannot open mixer handle"
+msgstr ""
+
+#: src/sound.c:184
+msgid "Cannot attach mixer to "
+msgstr ""
+
+#: src/sound.c:193
+msgid "Cannot register mixer"
+msgstr ""
+
+#: src/sound.c:201
+msgid "Cannot load mixer"
+msgstr ""
+
+#: src/sound.c:209
+msgid "Cannot allocate selem_id struct"
+msgstr ""
+
+#: src/sound.c:219
+msgid "Cannot find capture source element "
+msgstr ""
+
+#: src/sound.c:233
+msgid "Cannot set capture device "
+msgstr ""
+
+#: src/sound.c:242
+#, c-format
+msgid "Device %s does not have Capture capability"
+msgstr ""
+
+#: src/sound.c:258
+#, c-format
+msgid "Cannot find volume element %s\n"
+msgstr ""
+
+#: src/sound.c:264
+msgid "Mixture Device opened OK"
+msgstr ""
+
+#: src/sound.c:286
+msgid "Setting up Capture Level ..."
+msgstr ""
+
+#: src/sound.c:303
+#, c-format
+msgid ""
+"Cannot set capture volume to %d\n"
+"Error: %s"
+msgstr ""
+
+#: src/sound.c:313
+msgid "Capture Level set up OK"
+msgstr ""
+
+#: src/sound.c:331
+msgid "Opening Capture Device ..."
+msgstr ""
+
+#: src/sound.c:350
+msgid "Memory allocation failed - Quit"
+msgstr ""
+
+#: src/sound.c:360
+msgid "Capture Device opened OK"
+msgstr ""
+
+#: src/sound.c:376
+msgid "Closing down Sound Mixer"
+msgstr ""
+
+#: src/sound.c:393
+msgid "Closing down Sound Capture"
+msgstr ""
+
+#: src/sound.c:423
+#, c-format
+msgid ""
+"Cannot recover from underrun\n"
+"Prepare failed\n"
+"Error: %s\n"
+msgstr ""
+
+#: src/sound.c:440
+#, c-format
+msgid ""
+"Cannot recover from suspend\n"
+"Prepare failed\n"
+"Error: %s\n"
+msgstr ""
+
+#: src/stations.c:66
+msgid "STATION NAME"
+msgstr ""
+
+#: src/stations.c:67
+msgid "FREQUENCY"
+msgstr ""
+
+#: src/stations.c:68
+msgid " S/B"
+msgstr ""
+
+#: src/stations.c:69
+msgid "RPM"
+msgstr ""
+
+#: src/stations.c:70
+msgid "PIX/L"
+msgstr ""
+
+#: src/stations.c:71
+msgid " IOC"
+msgstr ""
+
+#: src/stations.c:72
+msgid "PHL"
+msgstr ""
+
+#: src/stations.c:73
+msgid "SLANT  "
+msgstr ""
+
+#: src/utils.c:36
+#, c-format
+msgid ""
+"Error reading %s\n"
+"Premature EOF (End Of File)"
+msgstr ""
+
+#: src/utils.c:127
+#, c-format
+msgid ""
+"Error reading %s\n"
+"Line longer than %d characters"
+msgstr ""
+
+#: src/utils.c:197 src/utils.c:200
+msgid ""
+"Failed to open xwefaxrc file\n"
+"Quit xwefax and correct"
+msgstr ""
+
+#: src/utils.c:208
+msgid "Sound Card Name"
+msgstr ""
+
+#: src/utils.c:213
+msgid "PCM Device Name"
+msgstr ""
+
+#: src/utils.c:218
+msgid "DSP Rate"
+msgstr ""
+
+#: src/utils.c:223
+msgid "ALSA Channel"
+msgstr ""
+
+#: src/utils.c:232 src/utils.c:235
+msgid ""
+"Invalid ALSA channel name\n"
+"Quit and correct xwefaxrc"
+msgstr ""
+
+#: src/utils.c:242
+msgid "LEFT"
+msgstr ""
+
+#: src/utils.c:242 src/utils.c:248
+msgid "MONO"
+msgstr ""
+
+#: src/utils.c:254
+msgid "Capture Source"
+msgstr ""
+
+#: src/utils.c:259
+msgid "Capture Volume Control"
+msgstr ""
+
+#: src/utils.c:264
+msgid "Capture Volume"
+msgstr ""
+
+#: src/utils.c:272
+msgid "Receiver type"
+msgstr ""
+
+#: src/utils.c:291
+msgid ""
+"No valid Receiver type set up.\n"
+"This may be due to an error in xwefaxrc\n"
+"or missing Perseus SDR API libraries."
+msgstr ""
+
+#: src/utils.c:298
+msgid "Perseus Frequency Correction"
+msgstr ""
+
+#: src/utils.c:305
+msgid "Perseus ADC Rate Correction"
+msgstr ""
+
+#: src/utils.c:312
+msgid "Receiver type for CAT"
+msgstr ""
+
+#: src/utils.c:331
+msgid ""
+"Error reading Receiver type for CAT\n"
+"Quit and correct xwefaxrc"
+msgstr ""
+
+#: src/utils.c:345
+msgid "CAT Serial Port"
+msgstr ""
+
+#: src/utils.c:350
+msgid "Main Window Height"
+msgstr ""
+
+#: src/utils.c:355
+msgid "White Tone Frequency"
+msgstr ""
+
+#: src/utils.c:362 src/utils.c:365
+msgid ""
+"Error reading White Tone Freq\n"
+"Quit and correct xwefaxrc"
+msgstr ""
+
+#: src/utils.c:371
+msgid "Black Tone Frequency"
+msgstr ""
+
+#: src/utils.c:378 src/utils.c:381
+msgid ""
+"Error reading Black Tone Freq\n"
+"Quit and correct xwefaxrc"
+msgstr ""
+
+#: src/utils.c:387
+msgid "Maximum Lines to Decode"
+msgstr ""
+
+#: src/utils.c:394 src/utils.c:398
+msgid ""
+"Specified Maximum Number of Linesto Decode seems unreasonable\n"
+"Quit and correct xwefaxrc"
+msgstr ""
+
+#: src/utils.c:405
+msgid "Lines per Minute"
+msgstr ""
+
+#: src/utils.c:412 src/utils.c:415
+msgid ""
+"Error reading RPM (Lines/Minute)\n"
+"Quit and correct xwefaxrc"
+msgstr ""
+
+#: src/utils.c:421
+msgid "Wefax Image Resolution"
+msgstr ""
+
+#: src/utils.c:428 src/utils.c:432
+msgid ""
+"Error reading Image Resolution\n"
+"(Pixels per Image Line)\n"
+"Quit and correct xwefaxrc"
+msgstr ""
+
+#: src/utils.c:439
+msgid "Default IOC Value"
+msgstr ""
+
+#: src/utils.c:446 src/utils.c:449
+msgid ""
+"Error reading IOC Value\n"
+"Quit and correct xwefaxrc"
+msgstr ""
+
+#: src/utils.c:461
+msgid "Number of Phasing Lines"
+msgstr ""
+
+#: src/utils.c:468 src/utils.c:472
+msgid ""
+"Error reading Default\n"
+"Number of Phasing Lines\n"
+"Quit and correct xwefaxrc"
+msgstr ""
+
+#: src/utils.c:479
+msgid "Wefax Image Enhancement"
+msgstr ""
+
+#: src/utils.c:720
+msgid ""
+"Failed to Allocate Memory to Line Buffer\n"
+"Please quit and correct"
+msgstr ""
+
+#: src/utils.c:723
+msgid ""
+"Failed to Allocate Memory to Line Buffer\n"
+"Please Quit and correct"
+msgstr ""
+
+#: src/utils.c:743 src/utils.c:746
+msgid ""
+"Failed to Allocate Memory to Pixbuf\n"
+"Please Quit and correct"
+msgstr ""
+
+#: src/utils.c:875
+#, c-format
+msgid "Failed to open file: %s"
+msgstr ""
+
+#: src/utils.c:900
+msgid "# Created by xwefax"
+msgstr ""
+
+#: src/utils.c:905 src/utils.c:906 src/utils.c:922 src/utils.c:923
+msgid "Error writing Image to file"
+msgstr ""
+
+#: src/utils.c:928
+msgid "Image File saved OK"
+msgstr ""
+
+#: src/utils.c:975
+msgid "mlrpt: Error writing image to file"
+msgstr ""
+
+#: src/utils.c:976
+msgid "Error writing image to file"
+msgstr ""
+
+#: src/utils.c:998
+msgid "Usage: xwefax [-hv]"
+msgstr ""
+
+#: src/utils.c:1001
+msgid "       -h: Print this usage information and exit"
+msgstr ""
+
+#: src/utils.c:1004
+msgid "       -v: Print version number and exit"
+msgstr ""
+
+#: src/utils.c:1058
+msgid ""
+"A memory allocation failed\n"
+"Please quit xwefax and correct"
+msgstr ""
+
+#: src/utils.c:1074
+msgid ""
+"A memory re-allocation failed\n"
+"Please quit xwefax and correct"
+msgstr ""
+
+#: src/wefax.c:27
+msgid "Error - Stopping Reception"
+msgstr ""
+
+#: src/wefax.c:118 src/wefax.c:404
+msgid ""
+"Memory Allocation failed\n"
+"for image buffer"
+msgstr ""
+
+#: src/wefax.c:131 src/wefax.c:176 src/wefax.c:384
+msgid "Saving Decoded PPM Image File ..."
+msgstr ""
+
+#: src/wefax.c:136 src/wefax.c:181 src/wefax.c:389
+msgid "Failed to save PPM Image File"
+msgstr ""
+
+#: src/wefax.c:144 src/wefax.c:189 src/wefax.c:371
+msgid "Saving Decoded JPG Image File ..."
+msgstr ""
+
+#: src/wefax.c:149 src/wefax.c:194 src/wefax.c:376
+msgid "Failed to save JPG Image File"
+msgstr ""
+
+#: src/wefax.c:167
+msgid "Skipping Image Decode"
+msgstr ""
+
+#: src/wefax.c:351
+msgid "Ending WEFAX Decode ..."
+msgstr ""
+
+#: src/wefax.c:360
+msgid "Ending Decode-Missed Stop Tone?"
+msgstr ""
+
+#: src/wefax.c:452
+msgid ""
+"\n"
+"Error: "
+msgstr ""
+
+#: src/wefax.c:476
+msgid "Listening for Start Tone ..."
+msgstr ""
+
+#: src/wefax.c:514
+msgid "Stopping Reception"
+msgstr ""
+
+#: src/display.h:24
+msgid "<span background=\"green\" foreground=\"white\"> RECEIVE </span>"
+msgstr ""
+
+#: src/display.h:26
+msgid "<span background=\"lightgrey\" foreground=\"black\"> STANDBY </span>"
+msgstr ""
+
+#: xwefax/xwefax.glade:10 xwefax/xwefax.glade:478 xwefax/xwefax.glade:599
+msgid "Xwefax"
+msgstr ""
+
+#: xwefax/xwefax.glade:99
+msgid "Generic Error Mesasge pop-up"
+msgstr ""
+
+#: xwefax/xwefax.glade:129
+msgid "Station List"
+msgstr ""
+
+#: xwefax/xwefax.glade:141
+msgid "FM Decoder"
+msgstr ""
+
+#: xwefax/xwefax.glade:152
+msgid "Zero Crossing"
+msgstr ""
+
+#: xwefax/xwefax.glade:161
+msgid "Bilevel Detect"
+msgstr ""
+
+#: xwefax/xwefax.glade:172
+msgid "RPM (lines/min)"
+msgstr ""
+
+#: xwefax/xwefax.glade:183 xwefax/xwefax.glade:339
+msgid "60"
+msgstr ""
+
+#: xwefax/xwefax.glade:191
+msgid "90"
+msgstr ""
+
+#: xwefax/xwefax.glade:200
+msgid "100"
+msgstr ""
+
+#: xwefax/xwefax.glade:209
+msgid "120"
+msgstr ""
+
+#: xwefax/xwefax.glade:219
+msgid "180"
+msgstr ""
+
+#: xwefax/xwefax.glade:228
+msgid "240"
+msgstr ""
+
+#: xwefax/xwefax.glade:239
+msgid "Resolution (pix/line)"
+msgstr ""
+
+#: xwefax/xwefax.glade:250
+msgid "600"
+msgstr ""
+
+#: xwefax/xwefax.glade:258
+msgid "1200"
+msgstr ""
+
+#: xwefax/xwefax.glade:270
+msgid "IOC Value"
+msgstr ""
+
+#: xwefax/xwefax.glade:281
+msgid "288"
+msgstr ""
+
+#: xwefax/xwefax.glade:289
+msgid "576"
+msgstr ""
+
+#: xwefax/xwefax.glade:301
+msgid "Phasing Lines"
+msgstr ""
+
+#: xwefax/xwefax.glade:312
+msgid "10"
+msgstr ""
+
+#: xwefax/xwefax.glade:320
+msgid "20"
+msgstr ""
+
+#: xwefax/xwefax.glade:330
+msgid "40"
+msgstr ""
+
+#: xwefax/xwefax.glade:352
+msgid "In-Image Phasing"
+msgstr ""
+
+#: xwefax/xwefax.glade:364
+msgid "Image Enhancement"
+msgstr ""
+
+#: xwefax/xwefax.glade:375
+msgid "None"
+msgstr ""
+
+#: xwefax/xwefax.glade:384
+msgid "Normalize Contrast"
+msgstr ""
+
+#: xwefax/xwefax.glade:393
+msgid "Bilevel Image"
+msgstr ""
+
+#: xwefax/xwefax.glade:404
+msgid "Image File Format"
+msgstr ""
+
+#: xwefax/xwefax.glade:415
+msgid "JPEG"
+msgstr ""
+
+#: xwefax/xwefax.glade:424
+msgid "PGM"
+msgstr ""
+
+#: xwefax/xwefax.glade:433
+msgid "Both"
+msgstr ""
+
+#: xwefax/xwefax.glade:452
+msgid "Capture Setup"
+msgstr ""
+
+#: xwefax/xwefax.glade:566
+msgid "Quit Xwefax?"
+msgstr ""
+
+#: xwefax/xwefax.glade:653
+msgid "Wefax Image"
+msgstr ""
+
+#: xwefax/xwefax.glade:694
+msgid "Signal"
+msgstr ""
+
+#: xwefax/xwefax.glade:732
+msgid "Spectrum"
+msgstr ""
+
+#: xwefax/xwefax.glade:767
+msgid "STANDBY"
+msgstr ""
+
+#: xwefax/xwefax.glade:781
+msgid "Skip"
+msgstr ""
+
+#: xwefax/xwefax.glade:797
+msgid "Start Tone"
+msgstr ""
+
+#: xwefax/xwefax.glade:811
+msgid "Sync Pulse"
+msgstr ""
+
+#: xwefax/xwefax.glade:825
+msgid "Decoding"
+msgstr ""
+
+#: xwefax/xwefax.glade:836
+msgid "Save Img"
+msgstr ""
+
+#: xwefax/xwefax.glade:956
+msgid "Fix Slant "
+msgstr ""
+
+#: xwefax/xwefax.glade:979
+msgid "Xwefax Control"
+msgstr ""
+
+#: xwefax/xwefax.glade:1018
+msgid "Xwefax Messages"
+msgstr ""
+
+#: xwefax/xwefax.glade:1044
+msgid "Stations Listing"
+msgstr ""

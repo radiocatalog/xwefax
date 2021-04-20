@@ -1,6 +1,13 @@
 # List of source files containing translatable strings.
-
+src/cat.c
+src/detect.c
+src/display.c
 src/main.c
-src/interface.c
-src/callbacks.c
-src/support.c
+src/perseus.c
+src/sound.c
+src/stations.c
+src/utils.c
+src/wefax.c
+src/display.h
+xwefax/xwefax.glade
+

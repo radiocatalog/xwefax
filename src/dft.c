@@ -1,12 +1,4 @@
-/*  dft.c
- *
- *  DFT functions of xwefax application
- */
-
 /*
- *  xwefax: An application to decode Radio WEFAX signals from
- *  a Radio Receiver, through the computer's sound card.
- *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License as
  *  published by the Free Software Foundation; either version 2 of
@@ -21,6 +13,7 @@
  */
 
 #include "dft.h"
+#include "shared.h"
 
 /* Scaled-up, integer, sin/cos tables */
 static int
@@ -55,9 +48,9 @@ Idft_Init( int dft_input_size, int dft_bin_size )
   dw = M_2PI / (double)dft_input_size;
   for( i = 0; i < dft_input_size; i++ )
   {
-	w = dw * (double)i;
-	isin[i] = (int)(127.0 * sin(w) + 0.5);
-	icos[i] = (int)(127.0 * cos(w) + 0.5);
+    w = dw * (double)i;
+    isin[i] = (int)(127.0 * sin(w) + 0.5);
+    icos[i] = (int)(127.0 * cos(w) + 0.5);
   }
 
 } /* Idft_Init() */
@@ -79,20 +72,20 @@ Idft( int dft_input_size, int dft_bin_size )
   /* Calculate output bins */
   for( i = 0; i < dft_bin_size; i++ )
   {
-	sum_i = sum_q = w = 0;
+    sum_i = sum_q = w = 0;
 
-	/* Summate input values */
-	for( j = 0; j < dft_input_size; j++ )
-	{
-	  sum_i += dft_in_r[j] * isin[w];
-	  sum_q += dft_in_r[j] * icos[w];
-	  w += i + dft_bin_size; /* Makes the freq range max/min 2:1 */
-	  if( w >= dft_input_size ) w -= dft_input_size;
-	}
+    /* Summate input values */
+    for( j = 0; j < dft_input_size; j++ )
+    {
+      sum_i += dft_in_r[j] * isin[w];
+      sum_q += dft_in_r[j] * icos[w];
+      w += i + dft_bin_size; /* Makes the freq range max/min 2:1 */
+      if( w >= dft_input_size ) w -= dft_input_size;
+    }
 
-	/* Normalized summations to bins */
-	dft_out_r[i] = sum_i/dft_input_size;
-	dft_out_i[i] = sum_q/dft_input_size;
+    /* Normalized summations to bins */
+    dft_out_r[i] = sum_i/dft_input_size;
+    dft_out_i[i] = sum_q/dft_input_size;
 
   } /* for( i = 0; i < k; i++ ) */
 

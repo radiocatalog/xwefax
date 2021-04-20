@@ -13,14 +13,14 @@
  */
 
 #ifndef FILTERS_H
-#define FILTERS_H		1
+#define FILTERS_H       1
 
 #include "common.h"
 
 /* Low Pass Filter parameters for SSB demodulator
  * filters. The number of poles _must_ be_even_ */
-#define SSB_FILTER_POLES	8
-#define SSB_FILTER_RIPPLE	10.0
+#define SSB_FILTER_POLES    8
+#define SSB_FILTER_RIPPLE   10.0
 
 #endif
 

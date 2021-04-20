@@ -1,12 +1,4 @@
-/* cat.h
- *
- * Functions to set up Transceiver CAT
- */
-
 /*
- *  xwefax: An application to decode Radio WEFAX signals from
- *  a Radio Receiver, through the computer's sound card.
- *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License as
  *  published by the Free Software Foundation; either version 3 of
@@ -21,18 +13,17 @@
  */
 
 #ifndef CAT_H
-#define CAT_H	1
+#define CAT_H   1
 
 #include <sys/ioctl.h>
 #include <termios.h>
 #include "common.h"
-#include "support.h"
 
-#define MAX_SERIAL_RETRIES	10
+#define MAX_SERIAL_RETRIES  10
 
 /* Get/Set transceiver status */
-#define GET_TCVR_STATUS	0
-#define SET_TCVR_STATUS	1
+#define GET_TCVR_STATUS 0
+#define SET_TCVR_STATUS 1
 
 #endif
 

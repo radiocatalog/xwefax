@@ -1,12 +1,4 @@
-/*  shared.c
- *
- *  Shared global variables for xwefax application
- */
-
 /*
- *  xwefax: An application to decode Radio WEFAX signals from
- *  a Radio Receiver, through the computer's sound card.
- *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License as
  *  published by the Free Software Foundation; either version 2 of
@@ -26,15 +18,15 @@
 rc_data_t rc_data;
 
 /* Pixel buffer */
-guchar *gbl_pixel_buf;
+guchar *pixel_buf;
 
 /* Pixel buffer for display */
-GdkPixbuf *gbl_wefax_pixbuf = NULL;
+GdkPixbuf *wefax_pixbuf = NULL;
 
 /* Buffer for pixels of one image line */
-unsigned char *gbl_line_buffer = NULL;
-int gbl_line_count;
-int gbl_linebuff_input, gbl_linebuff_output;
+unsigned char *line_buffer = NULL;
+int line_count;
+int linebuff_input, linebuff_output;
 
 /* dft in/out buffers */
 int
@@ -43,47 +35,60 @@ int
   *dft_out_i = NULL;
 
 /* Pixbuf rowstride and num of channels */
-gint gbl_rowstride, gbl_n_channels;
+gint rowstride, n_channels;
 
 /* Tree list store and treeview for stations window */
 GtkListStore *stations_list_store = NULL;
 GtkTreeView  *stations_treeview   = NULL;
 
 GtkWidget
-  *stations_window = NULL,	/* Stations tree list window */
-  *gbl_popup_menu  = NULL,	/* Popup main menu */
-  *main_window,				/* xwefax's top window */
-  *gbl_scope,				/* Signal scope widget */
-  *gbl_spectrum,			/* Signal Spectrum widget */
-  *gbl_text_scroller,		/* Text view scroller  */
-  *gbl_wefax_drawingarea;	/* Drawingarea for WEFAX image */
+  *stations_window      = NULL, /* Stations tree list window */
+  *popup_menu           = NULL, /* Popup main menu */
+  *main_window          = NULL, /* Xwefax's top window */
+  *scope_drawingarea    = NULL, /* Signal Scope widget */
+  *spectrum_drawingarea = NULL, /* Signal Spectrum widget */
+  *level_gauge          = NULL, /* The vertical level gauge in control frame */
+  *text_scroller        = NULL, /* Text view scroller */
+  *wefax_drawingarea    = NULL; /* Drawingarea for WEFAX image */
+
+/* Gtk builders for some above that need to be global */
+GtkBuilder
+  *stations_window_builder = NULL,
+  *popup_menu_builder      = NULL,
+  *main_window_builder     = NULL;
 
 /* Pixbuffer for waterfall */
-GdkPixbuf *gbl_wfall_pixbuf = NULL;
-guchar    *gbl_wfall_pixels = NULL;
+GdkPixbuf *wfall_pixbuf = NULL;
+guchar    *wfall_pixels = NULL;
 gint
-  gbl_wfall_rowstride,
-  gbl_wfall_n_channels,
-  gbl_wfall_width,
-  gbl_wfall_height;
+  wfall_rowstride,
+  wfall_n_channels,
+  wfall_width,
+  wfall_height;
 
 /* Signal scope size */
-gint gbl_scope_width, gbl_scope_height;
+gint scope_width, scope_height;
+
+/* Values needed to plot the level gauge */
+int
+  gauge_input = -1,
+  gauge_level1 = 1,
+  gauge_level2 = 1;
 
 /* Text buffer for text view */
-GtkTextBuffer *gbl_text_buffer = NULL;
+GtkTextBuffer *text_buffer = NULL;
 
 /* Pixbuf rowstride and num of channels */
-gint gbl_rowstride, gbl_n_channels;
+gint rowstride, n_channels;
 
 /* Image files name  */
-char gbl_image_file[MAX_FILE_NAME];
+char image_file[MAX_FILE_NAME];
 
 /* Buffer for reading in DSP data */
-short *gbl_dsp_buffer = NULL;
+short *dsp_buffer = NULL;
 
 /* Average value of DFT bins */
-int *gbl_bin_ave = NULL;
+int *bin_ave = NULL;
 
 /* What action the WEFAX decoder should enter */
 int wefax_action = ACTION_STOP;

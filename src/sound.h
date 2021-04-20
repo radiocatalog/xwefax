@@ -1,12 +1,4 @@
-/*	sound.h
- *
- *  Sound vard handling functions for xwefax application
- */
-
 /*
- *  xwefax: An application to decode Radio WEFAX signals from
- *  a Radio Receiver, through the computer's sound card.
- *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License as
  *  published by the Free Software Foundation; either version 2 of
@@ -21,17 +13,16 @@
  */
 
 #ifndef SOUND_H
-#define SOUND_H		1
+#define SOUND_H     1
 
 #include "shared.h"
-#include "support.h"
 
-#define PERIOD_SIZE		4096	/* PCM period size */
-#define NUM_PERIODS		   4	/* Number of periods */
-#define SND_PCM_ACCESS	SND_PCM_ACCESS_RW_INTERLEAVED
-#define SND_PCM_FORMAT	SND_PCM_FORMAT_S16_LE
-#define EXACT_VAL		0
-#define PCM_OPEN_MODE	0
+#define PERIOD_SIZE     4096    /* PCM period size */
+#define NUM_PERIODS        4    /* Number of periods */
+#define SND_PCM_ACCESS  SND_PCM_ACCESS_RW_INTERLEAVED
+#define SND_PCM_FORMAT  SND_PCM_FORMAT_S16_LE
+#define EXACT_VAL       0
+#define PCM_OPEN_MODE   0
 
 #endif
 

@@ -2,50 +2,63 @@
 
 SUBDIRS = src po
 
-INTLTOOL_FILES = intltool-extract.in \
-				 intltool-merge.in \
-				 intltool-update.in
-
 EXTRA_DIST = \
 			 autogen.sh \
-			 xwefax.glade \
-			 xwefax.gladep \
-			 xwefax.gladep \
 			 doc \
-			 xwefax \
-			 $(INTLTOOL_FILES)
+			 xwefax
 
 DISTCLEANFILES = \
-				 intltool-extract* \
-				 intltool-merge* \
-				 intltool-update* \
-				 po/.intltool-merge-cache*
+				 autom4te.cache/* \
+				 intl/* \
+				 m4/* \
+				 aclocal.m4 \
+				 compile \
+				 config.guess \
+				 config.rpath \
+				 config.status \
+				 config.sub \
+				 configure \
+				 depcomp \
+				 install-sh \
+				 missing \
+				 ABOUT-NLS \
+				 Makefile.in \
+				 config.h \
+				 config.h.in \
+				 config.log \
+				 configure \
+				 stamp-h1 \
+				 stamp-h.in \
+				 src/Makefile.in \
+				 po/Rules-quot \
+				 po/en@quot.header \
+				 po/remove-potcdate.sin \
+				 po/Makevars.template \
+				 po/boldquot.sed \
+				 po/insert-header.sin \
+				 po/stamp-po \
+				 po/en@boldquot.header \
+				 po/quot.sed \
+				 po/Makefile.in.in \
+				 po/xwefax.pot \
+				 Makefile
 
 install-data-local:
 	@$(NORMAL_INSTALL)
-	if test -d $(srcdir)/pixmaps; then \
-	  $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/pixmaps; \
-	  for pixmap in $(srcdir)/pixmaps/*; do \
-	  if test -f $$pixmap; then \
-	  $(INSTALL_DATA) $$pixmap $(DESTDIR)$(pkgdatadir)/pixmaps; \
-	  fi \
-	  done \
-	  fi
-	
-	if test -d $(HOME)/$(PACKAGE); then \
-	  echo Working directory exists: $(HOME)/$(PACKAGE) - not copying; \
-	  else \
-	  echo Copying $(PACKAGE) working directory to $(HOME)/$(PACKAGE); \
-	  cp -r $(srcdir)/$(PACKAGE) $(HOME); \
-	  fi
-
-dist-hook:
-	if test -d pixmaps; then \
-	  mkdir $(distdir)/pixmaps; \
-	  for pixmap in pixmaps/*; do \
-	  if test -f $$pixmap; then \
-	  cp -p $$pixmap $(distdir)/pixmaps; \
-	  fi \
-	  done \
-	  fi
+	if test -d files/; then \
+	  $(MKDIR_P) $(DESTDIR)$(datarootdir)/applications;\
+	  $(MKDIR_P) $(DESTDIR)$(datarootdir)/pixmaps;\
+	  $(install_sh_DATA) files/$(PACKAGE).desktop $(DESTDIR)$(datarootdir)/applications/; \
+	  $(install_sh_DATA) files/$(PACKAGE).svg $(DESTDIR)$(datarootdir)/pixmaps/; \
+	fi; \
+	if test -d doc/; then \
+	  $(MKDIR_P) $(DESTDIR)$(docdir);\
+	  $(MKDIR_P) $(DESTDIR)$(mandir)/man1;\
+	  $(install_sh_DATA) doc/* $(DESTDIR)$(docdir)/; \
+	  $(install_sh_DATA) doc/$(PACKAGE).1.gz $(DESTDIR)$(mandir)/man1/; \
+	fi;
+	if test -d $(PACKAGE)/; then \
+	  $(MKDIR_P) $(DESTDIR)$(datarootdir)/examples/$(PACKAGE)/;\
+	  cp -r $(PACKAGE)/* $(DESTDIR)$(datarootdir)/examples/$(PACKAGE)/; \
+	fi;
 
