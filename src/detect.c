@@ -39,7 +39,7 @@ Queue_Draw_Gauge( void )
 /* FM_Detect_Zero_Crossing()
  *
  * Estimates the frequency of the incoming WEFAX audio signal by
- * counting DSP samples, up for +ve and down for -ve, up to a
+ * counting Audio samples, up for +ve and down for -ve, up to a
  * maximum count of +- 1/4 of a cycle (of the highest (white)
  * frequency). This results in the count passing through zero
  * between the +ve and -ve half cycles of the signal and thus
@@ -47,52 +47,46 @@ Queue_Draw_Gauge( void )
  * From this the instantaneous signal frequency is calculated.
  */
   gboolean
-FM_Detect_Zero_Crossing( unsigned char *signal_level )
+FM_Detect_Zero_Crossing( uint8_t *signal_level )
 {
-  short
-    signal_sample,  /* Signal sample from DSP */
-    signal_max;     /* Maximum level from Audio DSP */
-
-  double
-    half_cycle, /* Half period of the WEFAX signal */
-    dsp_rate2,  /* Half the DSP rate, as a double  */
-    discr_op,   /* Output of FM detector (0-255)   */
-    dx = 0.0;   /* Interpolation of zero crossing point */
-
-  /* Index of DSP samples used. It is a float as
-   * for some modes, like SSTV, the pixel length
-   * is not an integer number of DSP samples */
-  static double idx = 0.0;
+  static short
+    signal_sample,   /* Signal sample from DSP */
+    signal_max = 0;  /* Maximum level from Audio DSP */
 
   static double
-    zeros_period = 0.0, /* Time elapsed between zeros, in DSP samples */
-    signal_freq  = 0.0, /* Measured frequency of incoming WEFAX signal */
-    sig_average  = 0.0, /* Signal samples average */
-    last_average = 0.0; /* Last signal average */
+    discrim_output,           // Output of FM detector (0-255)
+    zero_cross_interp = 0.0;  // Interpolation of zero crossing point
 
-  int
-    num_incrm,  /* Number of increments to period counter */
-    num_zeros;  /* Number of zero crossings in a pixel */
+  // Half the Audio sample rate, as a double
+  double sample_rate2  = (double)( rc_data.dsp_rate / 2 );
+
+  /* Count of Audio samples used. It is a float as
+   * for some modes, like SSTV, the pixel length
+   * is not an integer number of Audio samples */
+  static double samples_used_cnt = 0.0;
+
+  static double
+    zeros_period = 0.0, // Time elapsed between zeros, in Audio samples
+    signal_freq  = 0.0, // Measured frequency of incoming WEFAX signal
+    new_average  = 0.0, // New Audio samples average
+    last_average = 0.0; // Last Audio samples average
+
+  static int
+    period_cnt_incr = 0,  // Number of increments to period counter
+    pixel_num_zeros = 0;  // Number of zero crossings in a pixel
 
   /* These two variables are used to limit the effects of noise
-   * by imposing a minimum count of DSP samples between zeros */
-  static int
-    /* Minimum length of WEFAX signal 1/3 cycle in DSP samples */
-    min_cycle3 = 0,
-    /* Count of samples between zero crossings */
-    num_samples = 0;
+   * by imposing a minimum count of Audio samples between zeros
+   */
+  // Count of samples between zero crossings
+  static int inter_zero_samples = 0;
 
-  /* Initialize above, make it a little smaller than theoretical */
-  if( !min_cycle3 )
-    min_cycle3 = rc_data.dsp_rate / rc_data.white_freq / 3;
+  // Minimum length of WEFAX signal 1/3 cycle in Audio samples
+  int min_cycle3 = rc_data.dsp_rate / rc_data.white_freq / 3;
 
   /* Look for a zero crossing of the WEFAX audio
    * signal over the duration of each image pixel */
-  signal_max = 0;
-  num_incrm  = 0;
-  num_zeros  = 0;
-  dsp_rate2  = (double)( rc_data.dsp_rate / 2 );
-  while( idx < rc_data.pixel_len )
+  while( samples_used_cnt < rc_data.pixel_len )
   {
     signal_sample = 0;
 
@@ -114,63 +108,67 @@ FM_Detect_Zero_Crossing( unsigned char *signal_level )
     if( signal_max < abs(signal_sample) )
       signal_max = (short)( abs(signal_sample) );
 
-    /* Sliding widow average of DSP signal samples */
-    sig_average  = sig_average * ( SIG_AVE_WINDOW - 1.0 );
-    sig_average += (double)signal_sample;
-    sig_average /= SIG_AVE_WINDOW;
+    // Sliding widow average of DSP signal samples
+    new_average  = new_average * ( SIG_AVE_WINDOW - 1.0 );
+    new_average += (double)signal_sample;
+    new_average /= SIG_AVE_WINDOW;
 
-    /* This gives us a zero crossing of the input waveform */
-    num_samples++;
-    if( ((sig_average * last_average) <= 0.0) &&
-        (num_samples >= min_cycle3) )
+    // This gives us a zero crossing of the input waveform
+    inter_zero_samples++;
+    if( (new_average * last_average <= 0.0) &&
+        (inter_zero_samples >= min_cycle3) )
     {
-      /* Signal frequency is 1/2 DSP rate / length of half cycle */
-      /* Interpolate point of zero crossing */
-      if( (last_average - sig_average) != 0.0 )
-        dx = sig_average / ( last_average - sig_average );
-      if( dx < -1.0 ) dx = -1.0;
-      if( dx > 1.0 )  dx =  1.0;
+      // Signal frequency is 1/2 DSP rate / length of half cycle
+      // Interpolate point of zero crossing
+      if( (last_average - new_average) != 0.0 )
+        zero_cross_interp = new_average / ( last_average - new_average );
+      if( zero_cross_interp < -1.0 ) zero_cross_interp = -1.0;
+      if( zero_cross_interp >  1.0 ) zero_cross_interp =  1.0;
 
-      num_zeros++;
-      num_incrm = 0;
-      num_samples = 0;
-    } /* if( (sig_average * last_average) < 0.0 ) */
+      pixel_num_zeros++;
+      period_cnt_incr    = 0;
+      inter_zero_samples = 0;
+    } // if( (new_average * last_average) < 0.0 )
 
-    /* Save current signal average */
-    last_average = sig_average;
+    // Save current signal average
+    last_average = new_average;
 
-    /* Count number of signal samples
-     * between zero crossings */
+    // Count number of signal samples between zero crossings
     zeros_period += 1.0;
-    num_incrm++;
+    period_cnt_incr++;
 
-    /* Count DSP samples */
-    idx += 1.0;
-  } /* while( idx < rc_data.pixel_len ) */
+    // Count DSP samples
+    samples_used_cnt += 1.0;
+  } // while( samples_used_cnt < wefax_rc.pixel_len )
 
-  /* Calculate signal frequency from half cycle period */
-  zeros_period += dx; /* Add extrapolation of zero crossing */
-  if( num_zeros )
+  // Add extrapolation of zero crossing
+  if( pixel_num_zeros )
   {
-    half_cycle = ( zeros_period - (double)num_incrm ) / (double)num_zeros;
+    // Calculate signal frequency from half cycle period
+    zeros_period += zero_cross_interp;
+    double half_cycle =
+      ( zeros_period - (double)period_cnt_incr ) / (double)pixel_num_zeros;
     if( half_cycle != 0.0 )
-      signal_freq = dsp_rate2 / half_cycle;
+      signal_freq = sample_rate2 / half_cycle;
+
+    /* Prepares zeros_period to properly count
+     * signal samples to next zero crossing */
+    zeros_period = (double)period_cnt_incr - zero_cross_interp;
+    period_cnt_incr = 0;
   }
+  pixel_num_zeros = 0;
 
-  /* Prepares zeros_period to properly count
-   * signal samples to next zero crossing */
-  zeros_period = (double)num_incrm - dx;
+  // Reset the samples index
+  samples_used_cnt -= rc_data.pixel_len;
 
-  /* Reset the samples index */
-  idx -= rc_data.pixel_len;
+  // Scale and floor frequency to give a value 0-255
+  discrim_output = signal_freq / DISCR_SCALE - DISCR_FLOOR;
 
-  /* Scale and floor frequency to give a value 0-255 */
-  discr_op = signal_freq / DISCR_SCALE - DISCR_FLOOR;
-
-  /* Limit disriminator output in right range */
-  if( discr_op > 255.0 ) discr_op = 255.0;
-  if( discr_op < 0.0 )   discr_op = 0.0;
-  *signal_level = (unsigned char)discr_op;
+  // Limit disriminator output in right range
+  if( discrim_output > 255.0 ) discrim_output = 255.0;
+  if( discrim_output < 0.0 )   discrim_output = 0.0;
+  *signal_level = (unsigned char)discrim_output;
+  signal_max = 0;
 
   /* Display maximum signal level scaled down */
   if( isFlagClear(DISPLAY_SIGNAL) )
@@ -183,9 +181,9 @@ FM_Detect_Zero_Crossing( unsigned char *signal_level )
   }
 
   return( TRUE );
-} /* FM_Detect_Zero_Crossing() */
+} // FM_Detect_Zero_Crossing()
 
-/*------------------------------------------------------------------------*/
+//------------------------------------------------------------------------
 
 /* FM_Detect_Bilevel()
  *

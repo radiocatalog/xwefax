@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([xwefax], [2.4.3], [nkcyham@yahoo.com])
+AC_INIT([xwefax], [2.4.4], [nkcyham@yahoo.com])
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADER(config.h)

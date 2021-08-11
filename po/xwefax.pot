@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU xwefax 2.4.3\n"
+"Project-Id-Version: GNU xwefax 2.4.4\n"
 "Report-Msgid-Bugs-To: nkcyham@yahoo.com\n"
-"POT-Creation-Date: 2021-04-20 11:52+0300\n"
+"POT-Creation-Date: 2021-08-11 15:05+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,35 +51,35 @@ msgstr ""
 msgid "Closing down TCVR CAT"
 msgstr ""
 
-#: src/detect.c:412
+#: src/detect.c:410
 msgid "Skipping Phasing Pulse Sync"
 msgstr ""
 
-#: src/detect.c:413 src/detect.c:497
+#: src/detect.c:411 src/detect.c:495
 msgid "Starting WEFAX Image Decoder ..."
 msgstr ""
 
-#: src/detect.c:414 src/detect.c:498
+#: src/detect.c:412 src/detect.c:496
 msgid "Listening for Stop Tone ..."
 msgstr ""
 
-#: src/detect.c:496
+#: src/detect.c:494
 msgid "Phasing Pulse Synching ended"
 msgstr ""
 
-#: src/detect.c:642
+#: src/detect.c:640
 msgid "Skipping Start Tone Detection"
 msgstr ""
 
-#: src/detect.c:643 src/detect.c:659
+#: src/detect.c:641 src/detect.c:657
 msgid "Synchronizing Phasing Pulses ..."
 msgstr ""
 
-#: src/detect.c:658
+#: src/detect.c:656
 msgid "Start Tone Detected"
 msgstr ""
 
-#: src/detect.c:702
+#: src/detect.c:700
 msgid "Stop Tone Detected"
 msgstr ""
 
