@@ -186,7 +186,7 @@ Load_Config( gpointer data )
 
   /* Setup file path to xwefaxrc */
   snprintf( rc_fpath, sizeof(rc_fpath),
-      "%s/xwefax/xwefaxrc", getenv("HOME") );
+      "%s/.xwefaxrc", getenv("HOME") );
 
   /* Open xwefaxrc file */
   xwefaxrc = fopen( rc_fpath, "r" );
